@@ -23,7 +23,7 @@ public class UserCommand implements Command {
 		if (split.length > 1) {
 			String idString = split[1];
 			if (split[1].matches("<@(.[0-9]*)>"))
-				idString = split[1].substring(2, split[1].length() - 1);
+				idString = split[1].substring(2, split[1].length() - 1).replaceAll("!", "");
 			try {
 				long id = Long.valueOf(idString);
 				RestAction<User> userRA = e.getJDA().retrieveUserById(id);
@@ -72,7 +72,7 @@ public class UserCommand implements Command {
 					return;
 				}
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage("Please use a valid user mention or ID!").queue();
+				e.getChannel().sendMessage("Please use a valid user mention or ID! " + idString).queue();
 				return;
 			}
 		}
