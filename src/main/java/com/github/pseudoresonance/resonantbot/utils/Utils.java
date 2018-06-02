@@ -12,6 +12,9 @@ public class Utils extends Plugin {
 		CommandManager.registerCommand("stats", new StatsCommand(), this);
 		CommandManager.registerCommand("random", new RandomCommand(), this);
 		CommandManager.registerCommand("invite", new InviteCommand(), this);
+		CommandManager.registerCommand("info", new InfoCommand(), this);
+		CommandManager.registerCommand("user", new UserCommand(), this);
+		CommandManager.registerCommand("guild", new GuildCommand(), this);
 	}
 	
 	public void onDisable() {
