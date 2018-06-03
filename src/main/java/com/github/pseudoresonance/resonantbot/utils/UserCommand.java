@@ -28,7 +28,7 @@ public class UserCommand implements Command {
 			try {
 				id = Long.valueOf(idString);
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage("Please use a valid user mention or ID! " + idString).queue();
+				e.getChannel().sendMessage("Please use a valid user mention or ID!").queue();
 				return;
 			}
 		}
