@@ -19,7 +19,7 @@ public class PrefixCommand implements Command {
 		if (args.length == 0) {
 			e.getChannel().sendMessage("The prefix for " + e.getGuild().getName() + " is `" + MessageListener.getPrefix(e.getGuild()) + "`").queue();
 		} else if (args.length >= 1) {
-			if (PermissionUtil.checkPermission(e.getTextChannel(), e.getMember(), Permission.ADMINISTRATOR)) {
+			if (PermissionUtil.checkPermission(e.getTextChannel(), e.getMember(), Permission.ADMINISTRATOR) || e.getAuthor().getIdLong() == Config.getOwner()) {
 				if (!args[0].equals("")) {
 					String prefix = "";
 					for (String s : args) {

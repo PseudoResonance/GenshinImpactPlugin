@@ -74,7 +74,7 @@ public class GuildCommand implements Command {
 			info  += "AFK Timeout: `" + guild.getAfkTimeout().getSeconds() + " Seconds`" + "\n";
 		}
 		OffsetDateTime create = guild.getCreationTime();
-		info += "Created: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d k:mm:ss")) + " (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+		info += "Created: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
 		build.addField(guild.getName(), info, false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
