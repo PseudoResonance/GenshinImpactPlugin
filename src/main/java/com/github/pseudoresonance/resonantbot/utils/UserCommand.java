@@ -52,15 +52,13 @@ public class UserCommand implements Command {
 			}
 			if (user.isBot())
 				info  += "\n" + "Account Type: `Bot`";
-			else if (user.isFake())
-				info  += "\n" + "Account Type: `Fake`";
 			else
 				info  += "\n" + "Account Type: `User`";
 			OffsetDateTime create = user.getCreationTime();
-			info += "\n" + "Created: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+			info += "\n" + "Joined Discord: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
 			if (e.getGuild().isMember(user)) {
 				OffsetDateTime join = member.getJoinDate();
-				info += "\n" + "Joined: `" + join.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+				info += "\n" + "Joined Guild: `" + join.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
 				String roles = "";
 				List<Role> roleList = member.getRoles();
 				for (int i = 0; i < roleList.size(); i++)

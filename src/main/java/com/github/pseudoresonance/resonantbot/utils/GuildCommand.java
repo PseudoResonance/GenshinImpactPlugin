@@ -15,6 +15,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -74,7 +75,18 @@ public class GuildCommand implements Command {
 			info  += "AFK Timeout: `" + guild.getAfkTimeout().getSeconds() + " Seconds`" + "\n";
 		}
 		OffsetDateTime create = guild.getCreationTime();
-		info += "Created: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+		info += "Created: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`" + "\n";
+		String roles = "";
+		List<Role> roleList = guild.getRoles();
+		for (int i = 0; i < roleList.size(); i++)
+			if (i == 0)
+				roles += roleList.get(i).getName();
+			else if (!roleList.get(i).isPublicRole())
+				roles += ", " + roleList.get(i).getName();
+		if (!roles.equals(""))
+			info += "Roles: `" + roles + "`";
+		else
+			info += "Roles: `None`";
 		build.addField(guild.getName(), info, false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
