@@ -49,7 +49,6 @@ public class GuildCommand implements Command {
 				bots++;
 		}
 		info  += "Members: `" + membersSize + " (" + bots + " Bots | " + new BigDecimal(String.valueOf(bots / Double.valueOf(membersSize) * 100.0)).setScale(2, RoundingMode.HALF_UP) + "%)`" + "\n";
-		info  += "Roles: `" + guild.getRoles().size() + "`" + "\n";
 		info  += "Region: `" + guild.getRegion().getName() + "`" + "\n";
 		String verification = guild.getVerificationLevel().toString();
 		String[] verificationSplit = verification.split("_");
@@ -84,9 +83,9 @@ public class GuildCommand implements Command {
 			else if (!roleList.get(i).isPublicRole())
 				roles += ", " + roleList.get(i).getName();
 		if (!roles.equals(""))
-			info += "Roles: `" + roles + "`";
+			info += "Roles (" + guild.getRoles().size() + "): `" + roles + "`";
 		else
-			info += "Roles: `None`";
+			info += "Roles (0): `None`";
 		build.addField(guild.getName(), info, false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
