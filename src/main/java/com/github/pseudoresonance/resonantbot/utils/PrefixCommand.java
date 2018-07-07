@@ -1,6 +1,7 @@
 package com.github.pseudoresonance.resonantbot.utils;
 
 import com.github.pseudoresonance.resonantbot.Config;
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.listeners.MessageListener;
 
@@ -13,11 +14,11 @@ public class PrefixCommand implements Command {
 
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
 		if (e.getChannelType() == ChannelType.PRIVATE) {
-			e.getChannel().sendMessage("The prefix for DMs is `" + Config.getPrefix() + "`").queue();
+			e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.privatePrefix", Config.getPrefix())).queue();
 			return;
 		}
 		if (args.length == 0) {
-			e.getChannel().sendMessage("The prefix for " + e.getGuild().getName() + " is `" + MessageListener.getPrefix(e.getGuild()) + "`").queue();
+			e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
 		} else if (args.length >= 1) {
 			if (PermissionUtil.checkPermission(e.getTextChannel(), e.getMember(), Permission.ADMINISTRATOR) || e.getAuthor().getIdLong() == Config.getOwner()) {
 				if (!args[0].equals("")) {
@@ -27,18 +28,18 @@ public class PrefixCommand implements Command {
 					}
 					prefix = prefix.substring(0, prefix.length() - 1);
 					MessageListener.setPrefix(e.getGuild().getIdLong(), prefix);
-					e.getChannel().sendMessage("The prefix for " + e.getGuild().getName() + " has been set to `" + MessageListener.getPrefix(e.getGuild()) + "`").queue();
+					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.prefixSet", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
 				} else {
-					e.getChannel().sendMessage("Please add a prefix to set!").queue();
+					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.addPrefix")).queue();
 				}
 			} else {
-				e.getChannel().sendMessage("The prefix for " + e.getGuild().getName() + " is `" + MessageListener.getPrefix(e.getGuild()) + "`").queue();
+				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
 			}
 		}
 	}
 
-	public String getDesc() {
-		return "Sets or gets the guild prefix";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.prefixCommandDescription");
 	}
 
 	public boolean isHidden() {

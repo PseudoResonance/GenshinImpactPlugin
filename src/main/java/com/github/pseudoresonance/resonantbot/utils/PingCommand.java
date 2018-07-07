@@ -2,6 +2,7 @@ package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
 
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.ResonantBot;
 import com.github.pseudoresonance.resonantbot.api.Command;
 
@@ -16,19 +17,19 @@ public class PingCommand implements Command {
 		long now = System.nanoTime();
 		String heartBeat = (int) ResonantBot.getClient().getAveragePing() + "ms";
 		build.setColor(new Color(178, 17, 36));
-		build.addField("Pong! 🏓", "⏱️ Pinging...\n💓 " + heartBeat, false);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.pong"), "⏱️ " + Language.getMessage(e.getGuild().getIdLong(), "utils.pinging") + "\n💓 " + heartBeat, false);
 		Message message = e.getChannel().sendMessage(build.build()).complete();
 		long received = System.nanoTime();
 		long diff = (received - now) / 1000000;
 		String ping = diff + "ms";
 		build = new EmbedBuilder();
 		build.setColor(new Color(178, 17, 36));
-		build.addField("Pong! 🏓", "⏱️ " + ping + "\n💓 " + heartBeat, false);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.pong"), "⏱️ " + ping + "\n💓 " + heartBeat, false);
 		message.editMessage(build.build()).queue();
 	}
 
-	public String getDesc() {
-		return "Pong!";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.pingCommandDescription");
 	}
 
 	public boolean isHidden() {

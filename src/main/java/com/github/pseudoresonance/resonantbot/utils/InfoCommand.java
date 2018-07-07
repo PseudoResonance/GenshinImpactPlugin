@@ -3,6 +3,7 @@ package com.github.pseudoresonance.resonantbot.utils;
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import com.github.pseudoresonance.resonantbot.Config;
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -16,22 +17,22 @@ public class InfoCommand implements Command {
 		User own = e.getJDA().getUserById(Config.getOwner());
 		build.setTitle(e.getJDA().getSelfUser().getName());
 		build.setColor(new Color(242, 9, 230));
-		build.addField("Uptime", getUptime(), true);
-		build.addField("Owner", own.getName() + "#" + own.getDiscriminator(), true);
-		build.addField("Servers", String.valueOf(e.getJDA().getGuilds().size()), true);
-		build.addField("Helpful Links:", "[Invite Me](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.uptime"), getUptime(e.getGuild().getIdLong()), true);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.owner"), own.getName() + "#" + own.getDiscriminator(), true);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.servers"), String.valueOf(e.getJDA().getGuilds().size()), true);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.helpfulLinks"), "[" + Language.getMessage(e.getGuild().getIdLong(), "utils.inviteMe") + "](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
 
-	public String getDesc() {
-		return "Show minimal bot info";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.infoCommandDescription");
 	}
 
 	public boolean isHidden() {
 		return false;
 	}
 
-	private String getUptime() {
+	private String getUptime(long guildID) {
 		long start = ManagementFactory.getRuntimeMXBean().getStartTime();
 		long now = System.currentTimeMillis();
 		long uptime = now - start;
@@ -60,11 +61,10 @@ public class InfoCommand implements Command {
 		if (hours >= 24) {
 			long days = Math.floorDiv(hours, 24);
 			long nHours = hours % 24;
-			if (days == 1) {
-				upString = days + " day and " + nHours + ":" + min + ":" + sec;
-			} else {
-				upString = days + " days and " + nHours + ":" + min + ":" + sec;
-			}
+			if (days == 1)
+				upString = Language.getMessage(guildID, "utils.uptimeFormatSingular", days, nHours + ":" + min + ":" + sec);
+			else
+				upString = Language.getMessage(guildID, "utils.uptimeFormat", days, nHours + ":" + min + ":" + sec);
 		}
 		return upString;
 	}

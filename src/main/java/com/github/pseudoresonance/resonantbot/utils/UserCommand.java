@@ -7,6 +7,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -28,7 +30,7 @@ public class UserCommand implements Command {
 			try {
 				id = Long.valueOf(idString);
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage("Please use a valid user mention or ID!").queue();
+				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.validMentionID")).queue();
 				return;
 			}
 		}
@@ -37,28 +39,26 @@ public class UserCommand implements Command {
 		if (user != null) {
 			EmbedBuilder build = new EmbedBuilder();
 			Member member = e.getGuild().getMember(user);
-			build.setTitle("User Statistics");
+			build.setTitle(Language.getMessage(e.getGuild().getIdLong(), "utils.userStatistics"));
 			build.setThumbnail(user.getEffectiveAvatarUrl());
 			build.setColor(new Color(51, 214, 195));
 			String info = "";
-			info  += "User ID: `" + user.getId() + "`";
+			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.userID", user.getId());
 			if (e.getGuild().isMember(user)) {
 				build.setColor(member.getColorRaw());
 				String nick = member.getNickname();
 				if (nick != null)
-					info  += "\n" + "Nickname: `" + nick + "`";
-				else
-					info  += "\n" + "Nickname: `None`";
+					info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.nickname", nick);
 			}
 			if (user.isBot())
-				info  += "\n" + "Account Type: `Bot`";
+				info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.accountTypeBot");
 			else
-				info  += "\n" + "Account Type: `User`";
+				info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.accountTypeUser");
 			OffsetDateTime create = user.getCreationTime();
-			info += "\n" + "Joined Discord: `" + create.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+			info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.joinedDiscord", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())));
 			if (e.getGuild().isMember(user)) {
 				OffsetDateTime join = member.getJoinDate();
-				info += "\n" + "Joined Guild: `" + join.format(DateTimeFormatter.ofPattern("uuuu/MM/d H:mm:ss")) + " (yyyy/mm/dd) (" + ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())) + " days ago)`";
+				info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.joinedGuild", join.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())));
 				String roles = "";
 				List<Role> roleList = member.getRoles();
 				for (int i = 0; i < roleList.size(); i++)
@@ -67,19 +67,19 @@ public class UserCommand implements Command {
 					else
 						roles += ", " + roleList.get(i).getName();
 				if (!roles.equals(""))
-					info += "\n" + "Roles: `" + roles + "`";
+					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.roles", roleList.size(), roles);
 				else
-					info += "\n" + "Roles: `None`";
+					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.rolesNone");
 			}
 			build.addField(user.getName() + "#" + user.getDiscriminator(), info, false);
 			e.getChannel().sendMessage(build.build()).queue();
 			return;
 		}
-		e.getChannel().sendMessage("Please add a valid user mention or ID!").queue();
+		e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.validMentionID")).queue();
 	}
 
-	public String getDesc() {
-		return "Show Discord user info";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.userCommandDescription");
 	}
 
 	public boolean isHidden() {

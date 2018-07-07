@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.github.pseudoresonance.resonantbot.CommandManager;
 import com.github.pseudoresonance.resonantbot.Config;
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.PluginManager;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.listeners.MessageListener;
@@ -21,8 +22,8 @@ public class HelpCommand implements Command {
 				String prefix = MessageListener.getPrefix(e.getGuild());
 				EmbedBuilder build = new EmbedBuilder();
 				build.setColor(new Color(200, 0, 190));
-				build.setDescription("List of Commands for " + Config.getName());
-				build.setTitle(Config.getName() + " Help");
+				build.setDescription(Language.getMessage(e.getGuild().getIdLong(), "utils.listCommandsFor", Config.getName()));
+				build.setTitle(Language.getMessage(e.getGuild().getIdLong(), "utils.helpTitle", Config.getName()));
 				for (String pl : PluginManager.getPluginNames()) {
 					HashMap<String, Command> commands = CommandManager.getPluginCommandMap(PluginManager.getPlugin(pl));
 					int commandsFound = 0;
@@ -30,11 +31,11 @@ public class HelpCommand implements Command {
 						String commandSt = "";
 						for (String c : commands.keySet()) {
 							if (!commands.get(c).isHidden()) {
-								commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc() + "\n";
+								commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(e.getGuild().getIdLong()) + "\n";
 								commandsFound++;
 							} else {
 								if (e.getAuthor().getIdLong() == Config.getOwner()) {
-									commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc() + "\n";
+									commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(e.getGuild().getIdLong()) + "\n";
 									commandsFound++;
 								}
 							}
@@ -47,14 +48,14 @@ public class HelpCommand implements Command {
 				}
 				e.getChannel().sendMessage(build.build()).queue();
 			} else
-				e.getChannel().sendMessage("No commands loaded!").queue();
+				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "noCommandsLoaded")).queue();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
-	public String getDesc() {
-		return "Displays list of available commands";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.helpCommandDescription");
 	}
 
 	public boolean isHidden() {

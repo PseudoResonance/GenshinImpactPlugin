@@ -2,6 +2,8 @@ package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
 import java.util.List;
+
+import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -28,7 +30,7 @@ public class GuildListCommand implements Command {
 			endI = guilds.size();
 		}
 		if (startI >= guilds.size()) {
-			e.getChannel().sendMessage("There is no page " + (page + 1) + "!").queue();
+			e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.noPage", (page + 1))).queue();
 			return;
 		}
 		for (int i = startI; i < endI; i++) {
@@ -38,14 +40,14 @@ public class GuildListCommand implements Command {
 		guildString = guildString.substring(0, guildString.length() - 1);
 		EmbedBuilder build = new EmbedBuilder();
 		build.setColor(new Color(24, 226, 132));
-		build.setTitle(e.getJDA().getSelfUser().getName() + "'s Guilds");
-		build.addField("Guilds " + (startI + 1) + "-" + endI, guildString, true);
-		build.setFooter("Requested By " + e.getAuthor().getName() + "#" + e.getAuthor().getDiscriminator(), null);
+		build.setTitle(Language.getMessage(e.getGuild().getIdLong(), "utils.botsGuilds", e.getJDA().getSelfUser().getName()));
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.guildsList", (startI + 1), endI), guildString, true);
+		build.setFooter(Language.getMessage(e.getGuild().getIdLong(), "main.requestedBy", e.getAuthor().getName() + "#" + e.getAuthor().getDiscriminator()), null);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
 
-	public String getDesc() {
-		return "List connected guilds";
+	public String getDesc(long guildID) {
+		return Language.getMessage(guildID, "utils.guildListCommandDescription");
 	}
 
 	public boolean isHidden() {
