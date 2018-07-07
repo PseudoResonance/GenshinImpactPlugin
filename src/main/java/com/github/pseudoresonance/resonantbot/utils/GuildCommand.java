@@ -44,7 +44,7 @@ public class GuildCommand implements Command {
 		String info = "";
 		info  += Language.getMessage(e.getGuild().getIdLong(), "utils.guildStatistics", guild.getId()) + "\n";
 		User owner = guild.getOwner().getUser();
-		info  += Language.getMessage(e.getGuild().getIdLong(), "utils.ownerID", owner.getName() + "#" + owner.getDiscriminator(), owner.getId()) + "\n";
+		info  += Language.getMessage(e.getGuild().getIdLong(), "utils.ownerID", Language.escape(owner.getName()) + "#" + owner.getDiscriminator(), owner.getId()) + "\n";
 		List<Member> members = guild.getMembers();
 		int bots = 0;
 		int membersSize = members.size();
@@ -74,7 +74,7 @@ public class GuildCommand implements Command {
 		if (afkC == null)
 			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.afkNone") + "\n";
 		else {
-			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.afkChannel", afkC.getName()) + "\n";
+			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.afkChannel", Language.escape(afkC.getName())) + "\n";
 			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.afkChannel", guild.getAfkTimeout().getSeconds()) + "\n";
 		}
 		if (e.getAuthor().getIdLong() == Config.getOwner()) {
@@ -87,9 +87,9 @@ public class GuildCommand implements Command {
 		List<Role> roleList = guild.getRoles();
 		for (int i = 0; i < roleList.size(); i++)
 			if (i == 0)
-				roles += roleList.get(i).getName();
+				roles += Language.escape(roleList.get(i).getName());
 			else if (!roleList.get(i).isPublicRole())
-				roles += ", " + roleList.get(i).getName();
+				roles += ", " + Language.escape(roleList.get(i).getName());
 		if (!roles.equals(""))
 			info += Language.getMessage(e.getGuild().getIdLong(), "utils.roles", guild.getRoles().size(), roles);
 		else

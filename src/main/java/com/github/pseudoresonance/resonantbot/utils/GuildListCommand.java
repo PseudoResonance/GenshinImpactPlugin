@@ -35,7 +35,7 @@ public class GuildListCommand implements Command {
 		}
 		for (int i = startI; i < endI; i++) {
 			Guild g = guilds.get(i);
-			guildString += "`" + g.getName() + "` (" + g.getId() + "): " + g.getOwner().getAsMention() + "\n";
+			guildString += "`" + Language.escape(g.getName()) + "` (" + g.getId() + "): " + g.getOwner().getAsMention() + "\n";
 		}
 		guildString = guildString.substring(0, guildString.length() - 1);
 		EmbedBuilder build = new EmbedBuilder();

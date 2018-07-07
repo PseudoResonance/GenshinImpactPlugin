@@ -26,7 +26,7 @@ public class StatsCommand implements Command {
 		build.setTitle(e.getJDA().getSelfUser().getName());
 		build.setColor(new Color(77, 0, 153));
 		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.uptime"), getUptime(e.getGuild().getIdLong()), true);
-		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.owner"), own.getName() + "#" + own.getDiscriminator(), true);
+		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.owner"), Language.escape(own.getName()) + "#" + own.getDiscriminator(), true);
 		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.ramUsage"), getRam(), true);
 		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.cpuUsage"), getCpu(e.getGuild().getIdLong()), true);
 		build.addField(Language.getMessage(e.getGuild().getIdLong(), "utils.pluginsLoaded"), String.valueOf(PluginManager.getPlugins().size()), true);

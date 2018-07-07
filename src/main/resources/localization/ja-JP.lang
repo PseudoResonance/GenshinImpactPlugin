@@ -37,6 +37,7 @@ utils:
   pinging: "Pinging..."
   pingCommandDescription: "Pong!"
   prefixSet: "The prefix for {$$} has been set to `{$$}`"
+  invalidPrefix: "Prefixes cannot contain special characters!"
   addPrefix: "Please add a prefix to set!"
   prefixCommandDescription: "Sets or gets the guild prefix"
   minMaxPlease: "Please add minimum and maximum values!"

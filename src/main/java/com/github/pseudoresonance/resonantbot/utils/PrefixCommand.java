@@ -27,8 +27,11 @@ public class PrefixCommand implements Command {
 						prefix += s + " ";
 					}
 					prefix = prefix.substring(0, prefix.length() - 1);
-					MessageListener.setPrefix(e.getGuild().getIdLong(), prefix);
-					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.prefixSet", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
+					if (Language.isValidPrefix(prefix)) {
+						MessageListener.setPrefix(e.getGuild().getIdLong(), prefix);
+						e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.prefixSet", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
+					} else
+						e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.invalidPrefix")).queue();
 				} else {
 					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.addPrefix")).queue();
 				}

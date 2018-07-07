@@ -48,7 +48,7 @@ public class UserCommand implements Command {
 				build.setColor(member.getColorRaw());
 				String nick = member.getNickname();
 				if (nick != null)
-					info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.nickname", nick);
+					info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.nickname", Language.escape(nick));
 			}
 			if (user.isBot())
 				info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.accountTypeBot");
@@ -63,15 +63,15 @@ public class UserCommand implements Command {
 				List<Role> roleList = member.getRoles();
 				for (int i = 0; i < roleList.size(); i++)
 					if (i == 0)
-						roles += roleList.get(i).getName();
+						roles += Language.escape(roleList.get(i).getName());
 					else
-						roles += ", " + roleList.get(i).getName();
+						roles += ", " + Language.escape(roleList.get(i).getName());
 				if (!roles.equals(""))
 					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.roles", roleList.size(), roles);
 				else
 					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.rolesNone");
 			}
-			build.addField(user.getName() + "#" + user.getDiscriminator(), info, false);
+			build.addField(Language.escape(user.getName()) + "#" + user.getDiscriminator(), info, false);
 			e.getChannel().sendMessage(build.build()).queue();
 			return;
 		}
