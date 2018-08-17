@@ -2,9 +2,8 @@ package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 import com.github.pseudoresonance.resonantbot.CommandManager;
 import com.github.pseudoresonance.resonantbot.Config;
@@ -15,10 +14,16 @@ import com.github.pseudoresonance.resonantbot.api.Command;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 
 public class StatsCommand implements Command {
 	
-	private OperatingSystemMXBean osb = ManagementFactory.getOperatingSystemMXBean();
+	private static SystemInfo info = new SystemInfo();
+	
+	private static final boolean useSi = false;
+
+	private static final DecimalFormat df = new DecimalFormat("#.##");
 
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
 		EmbedBuilder build = new EmbedBuilder();
@@ -47,28 +52,37 @@ public class StatsCommand implements Command {
 	}
 
 	private String getCpu(long guildID) {
-		double load = osb.getSystemLoadAverage();
-		return load >= 0 ? load + "%" : Language.getMessage(guildID, "utils.unknown");
+		CentralProcessor cpu = info.getHardware().getProcessor();
+		return cpu.getSystemCpuLoad() >= 0 ? Double.valueOf(df.format(cpu.getSystemCpuLoad() * 100.0)) + "%" : Language.getMessage(guildID, "utils.unknown");
 	}
 
 	private String getRam() {
 		Runtime run = Runtime.getRuntime();
 		long total = run.totalMemory();
 		long mem = total - run.freeMemory();
-		BigDecimal memF = new BigDecimal(String.valueOf(mem / 1048576.0)).setScale(2, RoundingMode.HALF_UP);
-		BigDecimal totalF = new BigDecimal(String.valueOf(total / 1048576.0)).setScale(2, RoundingMode.HALF_UP);
-		return memF + " MiB / " + totalF + " MiB";
+		return bytesToHumanFormat(mem, useSi) + " / " + bytesToHumanFormat(total, useSi);
 	}
+
+	private static String bytesToHumanFormat(long bytes, boolean si) {
+		int unit = si ? 1000 : 1024;
+		if (bytes < unit)
+			return bytes + " B";
+		int exp = (int) (Math.log(bytes) / Math.log(unit));
+		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
+		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+}
 
 	private String getUptime(long guildID) {
 		long start = ManagementFactory.getRuntimeMXBean().getStartTime();
 		long now = System.currentTimeMillis();
 		long uptime = now - start;
-		long up = uptime / 1000;
-		long hours = Math.floorDiv(up, 3600);
-		long upmin = up % 3600;
-		long minutes = Math.floorDiv(upmin, 60);
-		long seconds = upmin % 60;
+		long days = TimeUnit.MILLISECONDS.toDays(uptime);
+		uptime -= TimeUnit.DAYS.toMillis(days);
+		long hours = TimeUnit.MILLISECONDS.toHours(uptime);
+		uptime -= TimeUnit.HOURS.toMillis(hours);
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
+		uptime -= TimeUnit.MINUTES.toMillis(minutes);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
 		String min = "00";
 		if (minutes != 0) {
 			if (minutes < 10) {
@@ -86,13 +100,11 @@ public class StatsCommand implements Command {
 			}
 		}
 		String upString = hours + ":" + min + ":" + sec;
-		if (hours >= 24) {
-			long days = Math.floorDiv(hours, 24);
-			long nHours = hours % 24;
+		if (days > 0) {
 			if (days == 1)
-				upString = Language.getMessage(guildID, "utils.uptimeFormatSingular", days, nHours + ":" + min + ":" + sec);
+				upString = Language.getMessage(guildID, "utils.uptimeFormatSingular", days, hours + ":" + min + ":" + sec);
 			else
-				upString = Language.getMessage(guildID, "utils.uptimeFormat", days, nHours + ":" + min + ":" + sec);
+				upString = Language.getMessage(guildID, "utils.uptimeFormat", days, hours + ":" + min + ":" + sec);
 		}
 		return upString;
 	}

@@ -10,6 +10,7 @@ public class Utils extends Plugin {
 		CommandManager.registerCommand("ping", new PingCommand(), this);
 		CommandManager.registerCommand("prefix", new PrefixCommand(), this);
 		CommandManager.registerCommand("stats", new StatsCommand(), this);
+		CommandManager.registerCommand("system", new SystemCommand(), this);
 		CommandManager.registerCommand("random", new RandomCommand(), this);
 		CommandManager.registerCommand("invite", new InviteCommand(), this);
 		CommandManager.registerCommand("info", new InfoCommand(), this);
