@@ -129,7 +129,7 @@ public class SystemCommand implements Command {
 		long free = 0;
 		for (OSFileStore fs : fileStores) {
 			total += fs.getTotalSpace();
-			free = fs.getUsableSpace();
+			free += fs.getUsableSpace();
 		}
 		long used = total - free;
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.used") + ": " + bytesToHumanFormat(used, useSi) + " " + Language.getMessage(id, "utils.free") + ": " + bytesToHumanFormat(free, useSi) + " " + Language.getMessage(id, "utils.total") + ": " + bytesToHumanFormat(total, useSi));
