@@ -13,14 +13,14 @@ import net.dv8tion.jda.core.utils.PermissionUtil;
 public class PrefixCommand implements Command {
 
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
-		if (e.getChannelType() == ChannelType.PRIVATE) {
-			e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.privatePrefix", Config.getPrefix())).queue();
-			return;
-		}
 		if (args.length == 0) {
-			e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
+			if (e.getChannelType() == ChannelType.PRIVATE) {
+				e.getChannel().sendMessage(Language.getMessage(e.getPrivateChannel().getIdLong(), "main.privatePrefix", MessageListener.getPrefix(e.getPrivateChannel().getIdLong()))).queue();
+			} else {
+				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild().getIdLong()))).queue();
+			}
 		} else if (args.length >= 1) {
-			if (PermissionUtil.checkPermission(e.getTextChannel(), e.getMember(), Permission.ADMINISTRATOR) || e.getAuthor().getIdLong() == Config.getOwner()) {
+			if (e.getChannelType() == ChannelType.PRIVATE || PermissionUtil.checkPermission(e.getTextChannel(), e.getMember(), Permission.ADMINISTRATOR) || e.getAuthor().getIdLong() == Config.getOwner()) {
 				if (!args[0].equals("")) {
 					String prefix = "";
 					for (String s : args) {
@@ -28,21 +28,30 @@ public class PrefixCommand implements Command {
 					}
 					prefix = prefix.substring(0, prefix.length() - 1);
 					if (Language.isValidPrefix(prefix)) {
-						MessageListener.setPrefix(e.getGuild().getIdLong(), prefix);
-						e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.prefixSet", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
+						if (e.getChannelType() == ChannelType.PRIVATE) {
+							MessageListener.setPrefix(e.getPrivateChannel().getIdLong(), prefix);
+							e.getChannel().sendMessage(Language.getMessage(e.getPrivateChannel().getIdLong(), "utils.privatePrefixSet", MessageListener.getPrefix(e.getPrivateChannel().getIdLong()))).queue();
+						} else {
+							MessageListener.setPrefix(e.getGuild().getIdLong(), prefix);
+							e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.prefixSet", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild().getIdLong()))).queue();
+						}
 					} else
-						e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.invalidPrefix")).queue();
+						e.getChannel().sendMessage(Language.getMessage(e, "utils.invalidPrefix")).queue();
 				} else {
-					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.addPrefix")).queue();
+					e.getChannel().sendMessage(Language.getMessage(e, "utils.addPrefix")).queue();
 				}
 			} else {
-				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild()))).queue();
+				if (e.getChannelType() == ChannelType.PRIVATE) {
+					e.getChannel().sendMessage(Language.getMessage(e.getPrivateChannel().getIdLong(), "main.privatePrefix", MessageListener.getPrefix(e.getPrivateChannel().getIdLong()))).queue();
+				} else {
+					e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "main.prefix", e.getGuild().getName(), MessageListener.getPrefix(e.getGuild().getIdLong()))).queue();
+				}
 			}
 		}
 	}
 
-	public String getDesc(long guildID) {
-		return Language.getMessage(guildID, "utils.prefixCommandDescription");
+	public String getDesc(long id) {
+		return Language.getMessage(id, "utils.prefixCommandDescription");
 	}
 
 	public boolean isHidden() {

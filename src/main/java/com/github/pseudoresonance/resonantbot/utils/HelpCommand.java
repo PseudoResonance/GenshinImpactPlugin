@@ -11,6 +11,7 @@ import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.listeners.MessageListener;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class HelpCommand implements Command {
@@ -18,12 +19,17 @@ public class HelpCommand implements Command {
 	@Override
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
 		try {
+			Long id = 0L;
+			if (e.getChannelType() == ChannelType.PRIVATE)
+				id = e.getPrivateChannel().getIdLong();
+			else
+				id = e.getGuild().getIdLong();
 			if (PluginManager.getPluginNames().size() > 0 && CommandManager.getCommands().size() > 0) {
-				String prefix = MessageListener.getPrefix(e.getGuild());
+				String prefix = MessageListener.getPrefix(e);
 				EmbedBuilder build = new EmbedBuilder();
 				build.setColor(new Color(200, 0, 190));
-				build.setDescription(Language.getMessage(e.getGuild().getIdLong(), "utils.listCommandsFor", Config.getName()));
-				build.setTitle(Language.getMessage(e.getGuild().getIdLong(), "utils.helpTitle", Config.getName()));
+				build.setDescription(Language.getMessage(id, "utils.listCommandsFor", Config.getName()));
+				build.setTitle(Language.getMessage(id, "utils.helpTitle", Config.getName()));
 				for (String pl : PluginManager.getPluginNames()) {
 					HashMap<String, Command> commands = CommandManager.getPluginCommandMap(PluginManager.getPlugin(pl));
 					int commandsFound = 0;
@@ -31,11 +37,11 @@ public class HelpCommand implements Command {
 						String commandSt = "";
 						for (String c : commands.keySet()) {
 							if (!commands.get(c).isHidden()) {
-								commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(e.getGuild().getIdLong()) + "\n";
+								commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(id) + "\n";
 								commandsFound++;
 							} else {
 								if (e.getAuthor().getIdLong() == Config.getOwner()) {
-									commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(e.getGuild().getIdLong()) + "\n";
+									commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(id) + "\n";
 									commandsFound++;
 								}
 							}
@@ -48,14 +54,14 @@ public class HelpCommand implements Command {
 				}
 				e.getChannel().sendMessage(build.build()).queue();
 			} else
-				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "noCommandsLoaded")).queue();
+				e.getChannel().sendMessage(Language.getMessage(id, "noCommandsLoaded")).queue();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 	
-	public String getDesc(long guildID) {
-		return Language.getMessage(guildID, "utils.helpCommandDescription");
+	public String getDesc(long id) {
+		return Language.getMessage(id, "utils.helpCommandDescription");
 	}
 
 	public boolean isHidden() {

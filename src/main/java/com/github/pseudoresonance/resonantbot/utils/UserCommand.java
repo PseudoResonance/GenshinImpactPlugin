@@ -30,7 +30,7 @@ public class UserCommand implements Command {
 			try {
 				id = Long.valueOf(idString);
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.validMentionID")).queue();
+				e.getChannel().sendMessage(Language.getMessage(e, "utils.validMentionID")).queue();
 				return;
 			}
 		}
@@ -39,26 +39,26 @@ public class UserCommand implements Command {
 		if (user != null) {
 			EmbedBuilder build = new EmbedBuilder();
 			Member member = e.getGuild().getMember(user);
-			build.setTitle(Language.getMessage(e.getGuild().getIdLong(), "utils.userStatistics"));
+			build.setTitle(Language.getMessage(e, "utils.userStatistics"));
 			build.setThumbnail(user.getEffectiveAvatarUrl());
 			build.setColor(new Color(51, 214, 195));
 			String info = "";
-			info  += Language.getMessage(e.getGuild().getIdLong(), "utils.userID", user.getId());
+			info  += Language.getMessage(e, "utils.userID", user.getId());
 			if (e.getGuild().isMember(user)) {
 				build.setColor(member.getColorRaw());
 				String nick = member.getNickname();
 				if (nick != null)
-					info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.nickname", Language.escape(nick));
+					info  += "\n" + Language.getMessage(e, "utils.nickname", Language.escape(nick));
 			}
 			if (user.isBot())
-				info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.accountTypeBot");
+				info  += "\n" + Language.getMessage(e, "utils.accountTypeBot");
 			else
-				info  += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.accountTypeUser");
+				info  += "\n" + Language.getMessage(e, "utils.accountTypeUser");
 			OffsetDateTime create = user.getCreationTime();
-			info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.joinedDiscord", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())));
+			info += "\n" + Language.getMessage(e, "utils.joinedDiscord", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())));
 			if (e.getGuild().isMember(user)) {
 				OffsetDateTime join = member.getJoinDate();
-				info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.joinedGuild", join.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())));
+				info += "\n" + Language.getMessage(e, "utils.joinedGuild", join.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())));
 				String roles = "";
 				List<Role> roleList = member.getRoles();
 				for (int i = 0; i < roleList.size(); i++)
@@ -67,19 +67,19 @@ public class UserCommand implements Command {
 					else
 						roles += ", " + Language.escape(roleList.get(i).getName());
 				if (!roles.equals(""))
-					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.roles", roleList.size(), roles);
+					info += "\n" + Language.getMessage(e, "utils.roles", roleList.size(), roles);
 				else
-					info += "\n" + Language.getMessage(e.getGuild().getIdLong(), "utils.rolesNone");
+					info += "\n" + Language.getMessage(e, "utils.rolesNone");
 			}
 			build.addField(Language.escape(user.getName()) + "#" + user.getDiscriminator(), info, false);
 			e.getChannel().sendMessage(build.build()).queue();
 			return;
 		}
-		e.getChannel().sendMessage(Language.getMessage(e.getGuild().getIdLong(), "utils.validMentionID")).queue();
+		e.getChannel().sendMessage(Language.getMessage(e, "utils.validMentionID")).queue();
 	}
 
-	public String getDesc(long guildID) {
-		return Language.getMessage(guildID, "utils.userCommandDescription");
+	public String getDesc(long id) {
+		return Language.getMessage(id, "utils.userCommandDescription");
 	}
 
 	public boolean isHidden() {
