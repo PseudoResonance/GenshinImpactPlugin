@@ -102,12 +102,17 @@ public class SystemCommand implements Command {
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.bios") + " :: " + firmware.getManufacturer() + " " + firmware.getName() + " " + firmware.getVersion() + " " + firmware.getDescription() + " (" + firmware.getReleaseDate() + ")");
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.system") + " :: " + system.getManufacturer() + " " + system.getModel());
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.fanSpeeds") + " :: ");
+		StringBuilder sbFans = new StringBuilder();
 		for (int i = 0; i < sensors.getFanSpeeds().length; i++) {
 			if (i > 0) {
-				sb.append(", ");
+				sbFans.append(", ");
 			}
-			sb.append(sensors.getFanSpeeds()[i]);
+			sbFans.append(sensors.getFanSpeeds()[i]);
 		}
+		String fans = sbFans.toString();
+		if (fans.length() == 0)
+			fans = Language.getMessage(id, "utils.unknown");
+		sb.append(fans);
 		output.add(sb.toString());
 		// POWER
 		sb = new StringBuilder();
