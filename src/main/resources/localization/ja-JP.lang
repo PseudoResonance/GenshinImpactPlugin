@@ -3,7 +3,7 @@
 utils:
   guildStatistics: "ギルド統計"
   guildID: "ギルドID： `{$1$}`"
-  ownerID: "オーナー：　`{$1$} （{$2$}）`"
+  ownerID: "所有者：　`{$1$} （{$2$}）`"
   members: "メンバー： `{$1$} （{$2$} ボット ｜ {$3$}％）`"
   region: "リージョン： `{$1$}`"
   verificationLevel: "認証レベル： `{$1$}`"
@@ -29,7 +29,7 @@ utils:
   systemTime: "シスタム時間"
   uptimeFormat: "{$1$}日と{$2$}"
   uptimeFormatSingular: "{$1$}日と{$2$}"
-  owner: "オーナー"
+  owner: "所有者"
   servers: "サーバー"
   helpfulLinks: "便利なリンク："
   inviteMe: "私を招待"
