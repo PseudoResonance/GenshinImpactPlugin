@@ -94,7 +94,7 @@ public class SystemCommand implements Command {
 		// MACHINE
 		sb = new StringBuilder();
 		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.hardware") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.systemUptime") + " :: " + getUptime(id, cpu.getSystemUptime()));
+		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.systemUptime") + " :: " + getUptimeSeconds(id, cpu.getSystemUptime()));
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.systemTime") + " :: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(id))));
 		Baseboard baseboard = system.getBaseboard();
 		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.motherboard") + " :: " + baseboard.getManufacturer() + " " + baseboard.getModel() + " " + baseboard.getVersion());
@@ -177,7 +177,7 @@ public class SystemCommand implements Command {
 		calcTime -= TimeUnit.HOURS.toSeconds(hours);
 		long minutes = TimeUnit.SECONDS.toMinutes(calcTime);
 		calcTime -= TimeUnit.MINUTES.toSeconds(minutes);
-		long seconds = TimeUnit.SECONDS.toSeconds(calcTime);
+		long seconds = calcTime;
 		String min = "00";
 		if (minutes != 0) {
 			if (minutes < 10) {
@@ -211,7 +211,41 @@ public class SystemCommand implements Command {
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-}
+	}
+
+	private String getUptimeSeconds(long id, long uptime) {
+		long days = TimeUnit.SECONDS.toDays(uptime);
+		uptime -= TimeUnit.DAYS.toSeconds(days);
+		long hours = TimeUnit.SECONDS.toHours(uptime);
+		uptime -= TimeUnit.HOURS.toSeconds(hours);
+		long minutes = TimeUnit.SECONDS.toMinutes(uptime);
+		uptime -= TimeUnit.MINUTES.toSeconds(minutes);
+		long seconds = uptime;
+		String min = "00";
+		if (minutes != 0) {
+			if (minutes < 10) {
+				min = "0" + minutes;
+			} else {
+				min = String.valueOf(minutes);
+			}
+		}
+		String sec = "00";
+		if (seconds != 0) {
+			if (seconds < 10) {
+				sec = "0" + seconds;
+			} else {
+				sec = String.valueOf(seconds);
+			}
+		}
+		String upString = hours + ":" + min + ":" + sec;
+		if (days > 0) {
+			if (days == 1)
+				upString = Language.getMessage(id, "utils.uptimeFormatSingular", days, hours + ":" + min + ":" + sec);
+			else
+				upString = Language.getMessage(id, "utils.uptimeFormat", days, hours + ":" + min + ":" + sec);
+		}
+		return upString;
+	}
 
 	private String getUptime(long id, long uptime) {
 		long days = TimeUnit.MILLISECONDS.toDays(uptime);
