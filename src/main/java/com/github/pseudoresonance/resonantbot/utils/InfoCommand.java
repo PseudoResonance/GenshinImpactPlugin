@@ -24,7 +24,10 @@ public class InfoCommand implements Command {
 		build.setTitle(e.getJDA().getSelfUser().getName());
 		build.setColor(new Color(242, 9, 230));
 		build.addField(Language.getMessage(id, "utils.uptime"), getUptime(id), true);
-		build.addField(Language.getMessage(id, "utils.owner"), Language.escape(own.getName()) + "#" + own.getDiscriminator(), true);
+		if (own != null)
+			build.addField(Language.getMessage(id, "utils.owner"), Language.escape(own.getName()) + "#" + own.getDiscriminator(), true);
+		else
+			build.addField(Language.getMessage(id, "utils.owner"), Language.getMessage(id, "main.none"), true);
 		build.addField(Language.getMessage(id, "utils.servers"), String.valueOf(e.getJDA().getGuilds().size()), true);
 		build.addField(Language.getMessage(id, "utils.helpfulLinks"), "[" + Language.getMessage(id, "utils.inviteMe") + "](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
 		e.getChannel().sendMessage(build.build()).queue();

@@ -13,7 +13,7 @@ import java.util.List;
 import com.github.pseudoresonance.resonantbot.Config;
 import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
-import com.github.pseudoresonance.resonantbot.listeners.MessageListener;
+import com.github.pseudoresonance.resonantbot.data.Data;
 
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Channel;
@@ -30,14 +30,20 @@ public class GuildCommand implements Command {
 		Guild guild = null;
 		if (e.getChannelType() == ChannelType.PRIVATE) {
 			if (args.length == 0) {
-				Language.getMessage(e, "utils.validGuild");
+				e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+				return;
 			} else {
 				try {
 					long id = Long.valueOf(args[0]);
 					guild = e.getJDA().getGuildById(id);
-					if (guild == null)
-						Language.getMessage(e, "utils.validGuild");
-				} catch (NumberFormatException ex) {}
+					if (guild == null) {
+						e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+						return;
+					}
+				} catch (NumberFormatException ex) {
+					e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+					return;
+				}
 			}
 		} else {
 			guild = e.getGuild();
@@ -93,11 +99,11 @@ public class GuildCommand implements Command {
 			info  += Language.getMessage(e, "utils.afkChannel", guild.getAfkTimeout().getSeconds()) + "\n";
 		}
 		if (e.getAuthor().getIdLong() == Config.getOwner()) {
-			String prefix = MessageListener.getPrefix(guild.getIdLong());
+			String prefix = Data.getGuildPrefix(guild.getIdLong());
 			info  += Language.getMessage(e, "utils.prefix", prefix) + "\n";
 		}
 		OffsetDateTime create = guild.getCreationTime();
-		info += Language.getMessage(e, "utils.created", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault()))) +  "\n";
+		info += Language.getMessage(e, "utils.created", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(guild.getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault()))) +  "\n";
 		String roles = "";
 		List<Role> roleList = guild.getRoles();
 		for (int i = 0; i < roleList.size(); i++)

@@ -15,7 +15,7 @@ public class PingCommand implements Command {
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
 		EmbedBuilder build = new EmbedBuilder();
 		long now = System.nanoTime();
-		String heartBeat = (int) ResonantBot.getClient().getAveragePing() + "ms";
+		String heartBeat = (int) ResonantBot.getJDA().getAveragePing() + "ms";
 		build.setColor(new Color(178, 17, 36));
 		build.addField(Language.getMessage(e, "utils.pong"), "⏱️ " + Language.getMessage(e, "utils.pinging") + "\n💓 " + heartBeat, false);
 		Message message = e.getChannel().sendMessage(build.build()).complete();

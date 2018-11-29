@@ -12,6 +12,7 @@ import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
@@ -38,13 +39,16 @@ public class UserCommand implements Command {
 		User user = userRA.complete();
 		if (user != null) {
 			EmbedBuilder build = new EmbedBuilder();
-			Member member = e.getGuild().getMember(user);
+			Member member = null;
+			if (e.getChannelType() != ChannelType.PRIVATE) {
+				member = e.getGuild().getMember(user);
+			}
 			build.setTitle(Language.getMessage(e, "utils.userStatistics"));
 			build.setThumbnail(user.getEffectiveAvatarUrl());
 			build.setColor(new Color(51, 214, 195));
 			String info = "";
 			info  += Language.getMessage(e, "utils.userID", user.getId());
-			if (e.getGuild().isMember(user)) {
+			if (e.getChannelType() != ChannelType.PRIVATE && e.getGuild().isMember(user)) {
 				build.setColor(member.getColorRaw());
 				String nick = member.getNickname();
 				if (nick != null)
@@ -55,21 +59,28 @@ public class UserCommand implements Command {
 			else
 				info  += "\n" + Language.getMessage(e, "utils.accountTypeUser");
 			OffsetDateTime create = user.getCreationTime();
-			info += "\n" + Language.getMessage(e, "utils.joinedDiscord", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())));
-			if (e.getGuild().isMember(user)) {
-				OffsetDateTime join = member.getJoinDate();
-				info += "\n" + Language.getMessage(e, "utils.joinedGuild", join.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())));
-				String roles = "";
-				List<Role> roleList = member.getRoles();
-				for (int i = 0; i < roleList.size(); i++)
-					if (i == 0)
-						roles += Language.escape(roleList.get(i).getName());
+			Long guildID = 0L;
+			if (e.getChannelType() == ChannelType.PRIVATE)
+				guildID = e.getPrivateChannel().getIdLong();
+			else
+				guildID = e.getGuild().getIdLong();
+			info += "\n" + Language.getMessage(e, "utils.joinedDiscord", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(guildID))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault())));
+			if (e.getChannelType() != ChannelType.PRIVATE) {
+				if (e.getGuild().isMember(user)) {
+					OffsetDateTime join = member.getJoinDate();
+					info += "\n" + Language.getMessage(e, "utils.joinedGuild", join.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(e.getGuild().getIdLong()))), ChronoUnit.DAYS.between(join, Instant.now().atZone(ZoneId.systemDefault())));
+					String roles = "";
+					List<Role> roleList = member.getRoles();
+					for (int i = 0; i < roleList.size(); i++)
+						if (i == 0)
+							roles += Language.escape(roleList.get(i).getName());
+						else
+							roles += ", " + Language.escape(roleList.get(i).getName());
+					if (!roles.equals(""))
+						info += "\n" + Language.getMessage(e, "utils.roles", roleList.size(), roles);
 					else
-						roles += ", " + Language.escape(roleList.get(i).getName());
-				if (!roles.equals(""))
-					info += "\n" + Language.getMessage(e, "utils.roles", roleList.size(), roles);
-				else
-					info += "\n" + Language.getMessage(e, "utils.rolesNone");
+						info += "\n" + Language.getMessage(e, "utils.rolesNone");
+				}
 			}
 			build.addField(Language.escape(user.getName()) + "#" + user.getDiscriminator(), info, false);
 			e.getChannel().sendMessage(build.build()).queue();
