@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.pseudoresonance.resonantbot</groupId>
@@ -32,7 +33,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.1.1</version>
+				<version>3.2.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -61,15 +62,15 @@
 			<url>http://jcenter.bintray.com</url>
 		</repository>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
+			<id>otake</id>
+			<url>https://nexus.otake.pw/repository/maven-snapshots</url>
 		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>3.8.1_447</version>
+			<version>3.8.1_448</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -81,7 +82,7 @@
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>3.7.2</version>
-</dependency>
+			<version>3.12.0</version>
+		</dependency>
 	</dependencies>
 </project>
