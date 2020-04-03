@@ -2,12 +2,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.pseudoresonance.resonantbot</groupId>
+	<groupId>io.github.pseudoresonance</groupId>
 	<artifactId>UtilsPlugin</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>${revision}</version>
 	<name>Utils</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<revision>1.0</revision>
 	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -25,9 +26,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
 				<configuration>
-					<source>10</source>
-					<target>10</target>
+					<source>13</source>
+					<target>13</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -42,18 +44,92 @@
 						</goals>
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<artifactSet>
-								<excludes>
-									<exclude>net.dv8tion:JDA</exclude>
-									<exclude>com.github.PseudoResonance:ResonantBot</exclude>
-								</excludes>
-							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>artifacts</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.coderplus.maven.plugins</groupId>
+				<artifactId>copy-rename-maven-plugin</artifactId>
+				<version>1.0</version>
+				<executions>
+					<execution>
+						<id>copy-file</id>
+						<phase>install</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}-${project.version}.jar</destinationFile>
+								</fileSet>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}.jar</destinationFile>
+								</fileSet>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}-javadoc.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}-${project.version}-javadoc.jar</destinationFile>
+								</fileSet>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}-javadoc.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}-javadoc.jar</destinationFile>
+								</fileSet>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}-sources.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}-${project.version}-sources.jar</destinationFile>
+								</fileSet>
+								<fileSet>
+									<sourceFile>target/${project.artifactId}-${project.version}-sources.jar</sourceFile>
+									<destinationFile>artifacts/${project.artifactId}-sources.jar</destinationFile>
+								</fileSet>
+							</fileSets>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
-		<finalName>${project.name}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 	</build>
 	<repositories>
 		<repository>
@@ -70,19 +146,19 @@
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
-			<version>3.8.1_448</version>
+			<version>4.1.1_127</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.PseudoResonance</groupId>
+			<groupId>io.github.pseudoresonance</groupId>
 			<artifactId>ResonantBot</artifactId>
-			<version>0.6-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
-			<version>3.12.0</version>
+			<version>3.9.1</version>
 		</dependency>
 	</dependencies>
 </project>

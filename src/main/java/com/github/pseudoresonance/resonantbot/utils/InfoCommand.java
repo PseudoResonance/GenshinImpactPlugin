@@ -3,13 +3,13 @@ package com.github.pseudoresonance.resonantbot.utils;
 import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import com.github.pseudoresonance.resonantbot.Config;
-import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
+import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class InfoCommand implements Command {
 
@@ -23,18 +23,18 @@ public class InfoCommand implements Command {
 		User own = e.getJDA().getUserById(Config.getOwner());
 		build.setTitle(e.getJDA().getSelfUser().getName());
 		build.setColor(new Color(242, 9, 230));
-		build.addField(Language.getMessage(id, "utils.uptime"), getUptime(id), true);
+		build.addField(LanguageManager.getLanguage(id).getMessage("utils.uptime"), getUptime(id), true);
 		if (own != null)
-			build.addField(Language.getMessage(id, "utils.owner"), Language.escape(own.getName()) + "#" + own.getDiscriminator(), true);
+			build.addField(LanguageManager.getLanguage(id).getMessage("utils.owner"), LanguageManager.escape(own.getName()) + "#" + own.getDiscriminator(), true);
 		else
-			build.addField(Language.getMessage(id, "utils.owner"), Language.getMessage(id, "main.none"), true);
-		build.addField(Language.getMessage(id, "utils.servers"), String.valueOf(e.getJDA().getGuilds().size()), true);
-		build.addField(Language.getMessage(id, "utils.helpfulLinks"), "[" + Language.getMessage(id, "utils.inviteMe") + "](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
+			build.addField(LanguageManager.getLanguage(id).getMessage("utils.owner"), LanguageManager.getLanguage(id).getMessage("main.none"), true);
+		build.addField(LanguageManager.getLanguage(id).getMessage("utils.servers"), String.valueOf(e.getJDA().getGuilds().size()), true);
+		build.addField(LanguageManager.getLanguage(id).getMessage("utils.helpfulLinks"), "[" + LanguageManager.getLanguage(id).getMessage("utils.inviteMe") + "](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
 
 	public String getDesc(long id) {
-		return Language.getMessage(id, "utils.infoCommandDescription");
+		return LanguageManager.getLanguage(id).getMessage("utils.infoCommandDescription");
 	}
 
 	public boolean isHidden() {
@@ -71,9 +71,9 @@ public class InfoCommand implements Command {
 			long days = Math.floorDiv(hours, 24);
 			long nHours = hours % 24;
 			if (days == 1)
-				upString = Language.getMessage(id, "utils.uptimeFormatSingular", days, nHours + ":" + min + ":" + sec);
+				upString = LanguageManager.getLanguage(id).getMessage("utils.uptimeFormatSingular", days, nHours + ":" + min + ":" + sec);
 			else
-				upString = Language.getMessage(id, "utils.uptimeFormat", days, nHours + ":" + min + ":" + sec);
+				upString = LanguageManager.getLanguage(id).getMessage("utils.uptimeFormat", days, nHours + ":" + min + ":" + sec);
 		}
 		return upString;
 	}

@@ -1,17 +1,16 @@
 package com.github.pseudoresonance.resonantbot.utils;
 
 import java.lang.management.ManagementFactory;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
-import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
+import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import oshi.SystemInfo;
 import oshi.hardware.Baseboard;
 import oshi.hardware.CentralProcessor;
@@ -49,59 +48,59 @@ public class SystemCommand implements Command {
 		OSFileStore[] fileStores = os.getFileSystem().getFileStores();
 		Runtime runtime = Runtime.getRuntime();
 		StringBuilder sb = new StringBuilder();
-		sb.append("=== " + Language.getMessage(id, "utils.systemStats") + " ===");
+		sb.append("=== " + LanguageManager.getLanguage(id).getMessage("utils.systemStats") + " ===");
 		// UPTIME
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.uptime") + " :: " + getUptime(id, (System.currentTimeMillis() - ManagementFactory.getRuntimeMXBean().getStartTime())));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.uptime") + " :: " + LanguageManager.getLanguage(id).formatTimeAgo(new Timestamp(ManagementFactory.getRuntimeMXBean().getStartTime()), false));
 		output.add(sb.toString());
 		// CPU
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.cpu") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.model") + " :: " + cpu.getName());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.cores") + " :: " + cpu.getPhysicalProcessorCount());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.sockets") + " :: " + cpu.getPhysicalPackageCount());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.coresPerSocket") + " :: " + ((Integer) (cpu.getPhysicalProcessorCount() / cpu.getPhysicalPackageCount())));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.threads") + " :: " + cpu.getLogicalProcessorCount());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.frequency") + " :: " + (cpu.getVendorFreq() >= 0 ? Double.valueOf(df.format(cpu.getVendorFreq() / 1000000000.0)) + "GHz" : Language.getMessage(id, "utils.unknown")));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.cpuUsage") + " :: " + (cpu.getSystemCpuLoad() >= 0 ? Double.valueOf(df.format(cpu.getSystemCpuLoad() * 100.0)) + "%" : Language.getMessage(id, "utils.unknown")));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.temperature") + " :: " + (sensors.getCpuTemperature() > 0 ? sensors.getCpuTemperature() + "°C" : Language.getMessage(id, "utils.unknown")));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.voltage") + " :: " + (sensors.getCpuVoltage() > 0 ? sensors.getCpuVoltage() + "V" : Language.getMessage(id, "utils.unknown")));
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.cpu") + " =");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.model") + " :: " + cpu.getName());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.cores") + " :: " + cpu.getPhysicalProcessorCount());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.sockets") + " :: " + cpu.getPhysicalPackageCount());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.coresPerSocket") + " :: " + ((Integer) (cpu.getPhysicalProcessorCount() / cpu.getPhysicalPackageCount())));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.threads") + " :: " + cpu.getLogicalProcessorCount());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.frequency") + " :: " + (cpu.getVendorFreq() >= 0 ? Double.valueOf(df.format(cpu.getVendorFreq() / 1000000000.0)) + "GHz" : LanguageManager.getLanguage(id).getMessage("utils.unknown")));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.cpuUsage") + " :: " + (cpu.getSystemLoadAverage(1)[0] >= 0 ? Double.valueOf(df.format(cpu.getSystemLoadAverage(1)[0])) + "%" : LanguageManager.getLanguage(id).getMessage("utils.unknown")));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.temperature") + " :: " + (sensors.getCpuTemperature() > 0 ? sensors.getCpuTemperature() + "°C" : LanguageManager.getLanguage(id).getMessage("utils.unknown")));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.voltage") + " :: " + (sensors.getCpuVoltage() > 0 ? sensors.getCpuVoltage() + "V" : LanguageManager.getLanguage(id).getMessage("utils.unknown")));
 		output.add(sb.toString());
 		// RAM
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.ram") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.used") + " :: " + bytesToHumanFormat(runtime.totalMemory() - runtime.freeMemory(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.free") + " :: " + bytesToHumanFormat(runtime.freeMemory(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.allocated") + " :: " + bytesToHumanFormat(runtime.totalMemory(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.maxAllocated") + " :: " + (runtime.maxMemory() == Long.MAX_VALUE ? Language.getMessage(id, "utils.unlimited") : bytesToHumanFormat(Runtime.getRuntime().maxMemory(), useSi)));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.available") + " :: " + bytesToHumanFormat(ram.getAvailable(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.total") + " :: " + bytesToHumanFormat(ram.getTotal(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.swapUsed") + " :: " + bytesToHumanFormat(ram.getSwapUsed(), useSi));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.swapTotal") + " :: " + bytesToHumanFormat(ram.getSwapTotal(), useSi));
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.ram") + " =");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.used") + " :: " + bytesToHumanFormat(runtime.totalMemory() - runtime.freeMemory(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.free") + " :: " + bytesToHumanFormat(runtime.freeMemory(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.allocated") + " :: " + bytesToHumanFormat(runtime.totalMemory(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.maxAllocated") + " :: " + (runtime.maxMemory() == Long.MAX_VALUE ? LanguageManager.getLanguage(id).getMessage("utils.unlimited") : bytesToHumanFormat(Runtime.getRuntime().maxMemory(), useSi)));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.available") + " :: " + bytesToHumanFormat(ram.getAvailable(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.total") + " :: " + bytesToHumanFormat(ram.getTotal(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.swapUsed") + " :: " + bytesToHumanFormat(ram.getSwapUsed(), useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.swapTotal") + " :: " + bytesToHumanFormat(ram.getSwapTotal(), useSi));
 		output.add(sb.toString());
 		// JAVA
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.java") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.javaVersion") + " :: " + System.getProperty("java.version"));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.javaVendor") + " :: " + System.getProperty("java.vendor"));
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.java") + " =");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.javaVersion") + " :: " + System.getProperty("java.version"));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.javaVendor") + " :: " + System.getProperty("java.vendor"));
 		output.add(sb.toString());
 		// OS
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.os") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.developer") + " :: " + os.getManufacturer());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.os") + " :: " + os.getFamily() + " " + os.getVersion());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.architecture") + " :: " + ManagementFactory.getOperatingSystemMXBean().getArch() + " " + os.getBitness() + "-bit");
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.os") + " =");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.developer") + " :: " + os.getManufacturer());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.os") + " :: " + os.getFamily() + " " + os.getVersion());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.architecture") + " :: " + ManagementFactory.getOperatingSystemMXBean().getArch() + " " + os.getBitness() + "-bit");
 		output.add(sb.toString());
 		// MACHINE
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.hardware") + " =");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.systemUptime") + " :: " + getUptimeSeconds(id, cpu.getSystemUptime()));
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.systemTime") + " :: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(id))));
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.hardware") + " =");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.systemUptime") + " :: " + LanguageManager.getLanguage(id).formatTimeAgo(new Timestamp(System.currentTimeMillis() - cpu.getSystemUptime() * 1000), false));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.systemTime") + " :: " + LanguageManager.getLanguage(id).formatDateTime(LocalDateTime.now()));
 		Baseboard baseboard = system.getBaseboard();
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.motherboard") + " :: " + baseboard.getManufacturer() + " " + baseboard.getModel() + " " + baseboard.getVersion());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.motherboard") + " :: " + baseboard.getManufacturer() + " " + baseboard.getModel() + " " + baseboard.getVersion());
 		Firmware firmware = system.getFirmware();
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.bios") + " :: " + firmware.getManufacturer() + " " + firmware.getName() + " " + firmware.getVersion() + " " + firmware.getDescription() + " (" + firmware.getReleaseDate() + ")");
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.system") + " :: " + system.getManufacturer() + " " + system.getModel());
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.fanSpeeds") + " :: ");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.bios") + " :: " + firmware.getManufacturer() + " " + firmware.getName() + " " + firmware.getVersion() + " " + firmware.getDescription() + " (" + firmware.getReleaseDate() + ")");
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.system") + " :: " + system.getManufacturer() + " " + system.getModel());
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.fanSpeeds") + " :: ");
 		StringBuilder sbFans = new StringBuilder();
 		for (int i = 0; i < sensors.getFanSpeeds().length; i++) {
 			if (i > 0) {
@@ -111,20 +110,20 @@ public class SystemCommand implements Command {
 		}
 		String fans = sbFans.toString();
 		if (fans.length() == 0)
-			fans = Language.getMessage(id, "utils.unknown");
+			fans = LanguageManager.getLanguage(id).getMessage("utils.unknown");
 		sb.append(fans);
 		output.add(sb.toString());
 		// POWER
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.powerSupply") + " =");
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.powerSupply") + " =");
 		for (int i = 0; i < power.length; i++) {
 			PowerSource p = power[i];
-			sb.append(System.lineSeparator()).append((i + 1) + ": " + p.getName() + " :: " + Language.getMessage(id, "utils.capacity") + ": " + Double.valueOf(df.format(p.getRemainingCapacity() * 100.0)) + "% " + getTimeRemaining(id, p.getTimeRemaining()));
+			sb.append(System.lineSeparator()).append((i + 1) + ": " + p.getName() + " :: " + LanguageManager.getLanguage(id).getMessage("utils.capacity") + ": " + Double.valueOf(df.format(p.getRemainingCapacity() * 100.0)) + "% " + getBatteryTime(id, p.getTimeRemaining()));
 		}
 		output.add(sb.toString());
 		// STORAGE
 		sb = new StringBuilder();
-		sb.append(System.lineSeparator()).append("= " + Language.getMessage(id, "utils.storage") + " =");
+		sb.append(System.lineSeparator()).append("= " + LanguageManager.getLanguage(id).getMessage("utils.storage") + " =");
 		long total = 0;
 		long free = 0;
 		for (OSFileStore fs : fileStores) {
@@ -132,7 +131,7 @@ public class SystemCommand implements Command {
 			free += fs.getUsableSpace();
 		}
 		long used = total - free;
-		sb.append(System.lineSeparator()).append(Language.getMessage(id, "utils.used") + ": " + bytesToHumanFormat(used, useSi) + " " + Language.getMessage(id, "utils.free") + ": " + bytesToHumanFormat(free, useSi) + " " + Language.getMessage(id, "utils.total") + ": " + bytesToHumanFormat(total, useSi));
+		sb.append(System.lineSeparator()).append(LanguageManager.getLanguage(id).getMessage("utils.used") + ": " + bytesToHumanFormat(used, useSi) + " " + LanguageManager.getLanguage(id).getMessage("utils.free") + ": " + bytesToHumanFormat(free, useSi) + " " + LanguageManager.getLanguage(id).getMessage("utils.total") + ": " + bytesToHumanFormat(total, useSi));
 		int n = 0;
 		for (int i = 0; i < disks.length; i++) {
 			HWDiskStore ds = disks[i];
@@ -155,53 +154,22 @@ public class SystemCommand implements Command {
 		}
 		e.getChannel().sendMessage("```asciidoc" + System.lineSeparator() + sb.toString() + "```").queue();
 	}
+	
+	public String getBatteryTime(long id, double time) {
+		if (time < -1)
+			return LanguageManager.getLanguage(id).getMessage("utils.charging");
+		else if (time < 0)
+			return LanguageManager.getLanguage(id).getMessage("utils.calculating");
+		else
+			return LanguageManager.getLanguage(id).formatTimeAgo(new Timestamp(System.currentTimeMillis() - (int) (time * 1000)), false);
+	}
 
 	public String getDesc(long id) {
-		return Language.getMessage(id, "utils.systemCommandDescription");
+		return LanguageManager.getLanguage(id).getMessage("utils.systemCommandDescription");
 	}
 
 	public boolean isHidden() {
 		return true;
-	}
-	
-	private static String getTimeRemaining(long id, double time) {
-		if (time < -1d) {
-			return Language.getMessage(id, "utils.charging");
-		} else if (time < 0d) {
-			return Language.getMessage(id, "utils.calculating");
-		}
-		long calcTime = (long) time;
-		long days = TimeUnit.SECONDS.toDays(calcTime);
-		calcTime -= TimeUnit.DAYS.toSeconds(days);
-		long hours = TimeUnit.SECONDS.toHours(calcTime);
-		calcTime -= TimeUnit.HOURS.toSeconds(hours);
-		long minutes = TimeUnit.SECONDS.toMinutes(calcTime);
-		calcTime -= TimeUnit.MINUTES.toSeconds(minutes);
-		long seconds = calcTime;
-		String min = "00";
-		if (minutes != 0) {
-			if (minutes < 10) {
-				min = "0" + minutes;
-			} else {
-				min = String.valueOf(minutes);
-			}
-		}
-		String sec = "00";
-		if (seconds != 0) {
-			if (seconds < 10) {
-				sec = "0" + seconds;
-			} else {
-				sec = String.valueOf(seconds);
-			}
-		}
-		String upString = hours + ":" + min + ":" + sec;
-		if (days > 0) {
-			if (days == 1)
-				upString = Language.getMessage(id, "utils.uptimeFormatSingular", days, hours + ":" + min + ":" + sec);
-			else
-				upString = Language.getMessage(id, "utils.uptimeFormat", days, hours + ":" + min + ":" + sec);
-		}
-		return upString;
 	}
 
 	private static String bytesToHumanFormat(long bytes, boolean si) {
@@ -211,74 +179,6 @@ public class SystemCommand implements Command {
 		int exp = (int) (Math.log(bytes) / Math.log(unit));
 		String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
 		return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
-	}
-
-	private String getUptimeSeconds(long id, long uptime) {
-		long days = TimeUnit.SECONDS.toDays(uptime);
-		uptime -= TimeUnit.DAYS.toSeconds(days);
-		long hours = TimeUnit.SECONDS.toHours(uptime);
-		uptime -= TimeUnit.HOURS.toSeconds(hours);
-		long minutes = TimeUnit.SECONDS.toMinutes(uptime);
-		uptime -= TimeUnit.MINUTES.toSeconds(minutes);
-		long seconds = uptime;
-		String min = "00";
-		if (minutes != 0) {
-			if (minutes < 10) {
-				min = "0" + minutes;
-			} else {
-				min = String.valueOf(minutes);
-			}
-		}
-		String sec = "00";
-		if (seconds != 0) {
-			if (seconds < 10) {
-				sec = "0" + seconds;
-			} else {
-				sec = String.valueOf(seconds);
-			}
-		}
-		String upString = hours + ":" + min + ":" + sec;
-		if (days > 0) {
-			if (days == 1)
-				upString = Language.getMessage(id, "utils.uptimeFormatSingular", days, hours + ":" + min + ":" + sec);
-			else
-				upString = Language.getMessage(id, "utils.uptimeFormat", days, hours + ":" + min + ":" + sec);
-		}
-		return upString;
-	}
-
-	private String getUptime(long id, long uptime) {
-		long days = TimeUnit.MILLISECONDS.toDays(uptime);
-		uptime -= TimeUnit.DAYS.toMillis(days);
-		long hours = TimeUnit.MILLISECONDS.toHours(uptime);
-		uptime -= TimeUnit.HOURS.toMillis(hours);
-		long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
-		uptime -= TimeUnit.MINUTES.toMillis(minutes);
-		long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
-		String min = "00";
-		if (minutes != 0) {
-			if (minutes < 10) {
-				min = "0" + minutes;
-			} else {
-				min = String.valueOf(minutes);
-			}
-		}
-		String sec = "00";
-		if (seconds != 0) {
-			if (seconds < 10) {
-				sec = "0" + seconds;
-			} else {
-				sec = String.valueOf(seconds);
-			}
-		}
-		String upString = hours + ":" + min + ":" + sec;
-		if (days > 0) {
-			if (days == 1)
-				upString = Language.getMessage(id, "utils.uptimeFormatSingular", days, hours + ":" + min + ":" + sec);
-			else
-				upString = Language.getMessage(id, "utils.uptimeFormat", days, hours + ":" + min + ":" + sec);
-		}
-		return upString;
 	}
 
 }

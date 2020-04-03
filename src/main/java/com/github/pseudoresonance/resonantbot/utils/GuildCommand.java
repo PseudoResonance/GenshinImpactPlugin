@@ -6,23 +6,22 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import com.github.pseudoresonance.resonantbot.Config;
-import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.data.Data;
+import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class GuildCommand implements Command {
 
@@ -30,18 +29,18 @@ public class GuildCommand implements Command {
 		Guild guild = null;
 		if (e.getChannelType() == ChannelType.PRIVATE) {
 			if (args.length == 0) {
-				e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.validGuild")).queue();
 				return;
 			} else {
 				try {
 					long id = Long.valueOf(args[0]);
 					guild = e.getJDA().getGuildById(id);
 					if (guild == null) {
-						e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+						e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.validGuild")).queue();
 						return;
 					}
 				} catch (NumberFormatException ex) {
-					e.getChannel().sendMessage(Language.getMessage(e, "utils.validGuild")).queue();
+					e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.validGuild")).queue();
 					return;
 				}
 			}
@@ -57,15 +56,15 @@ public class GuildCommand implements Command {
 			}
 		}
 		EmbedBuilder build = new EmbedBuilder();
-		build.setTitle(Language.getMessage(e, "utils.guildStatistics"));
+		build.setTitle(LanguageManager.getLanguage(e).getMessage("utils.guildStatistics"));
 		String url = guild.getIconUrl();
 		if (url != null)
 			build.setThumbnail(url);
 		build.setColor(new Color(24, 226, 132));
 		String info = "";
-		info  += Language.getMessage(e, "utils.guildStatistics", guild.getId()) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.guildStatistics", guild.getId()) + "\n";
 		User owner = guild.getOwner().getUser();
-		info  += Language.getMessage(e, "utils.ownerID", Language.escape(owner.getName()) + "#" + owner.getDiscriminator(), owner.getId()) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.ownerID", LanguageManager.escape(owner.getName()) + "#" + owner.getDiscriminator(), owner.getId()) + "\n";
 		List<Member> members = guild.getMembers();
 		int bots = 0;
 		int membersSize = members.size();
@@ -73,8 +72,8 @@ public class GuildCommand implements Command {
 			if (member.getUser().isBot())
 				bots++;
 		}
-		info  += Language.getMessage(e, "utils.members", membersSize, bots, new BigDecimal(String.valueOf(bots / Double.valueOf(membersSize) * 100.0)).setScale(2, RoundingMode.HALF_UP)) + "\n";
-		info  += Language.getMessage(e, "utils.region", guild.getRegion().getName()) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.members", membersSize, bots, new BigDecimal(String.valueOf(bots / Double.valueOf(membersSize) * 100.0)).setScale(2, RoundingMode.HALF_UP)) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.region", guild.getRegion().getName()) + "\n";
 		String verification = guild.getVerificationLevel().toString();
 		String[] verificationSplit = verification.split("_");
 		String veriRet = "";
@@ -82,7 +81,7 @@ public class GuildCommand implements Command {
 			veriRet += part.substring(0, 1).toUpperCase() + part.substring(1, part.length()).toLowerCase() + " ";
 		}
 		veriRet = veriRet.substring(0, veriRet.length() - 1);
-		info  += Language.getMessage(e, "utils.verificationLevel", veriRet) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.verificationLevel", veriRet) + "\n";
 		String explicit = guild.getExplicitContentLevel().toString();
 		String[] explicitSplit = explicit.split("_");
 		String explRet = "";
@@ -90,37 +89,37 @@ public class GuildCommand implements Command {
 			explRet += part.substring(0, 1).toUpperCase() + part.substring(1, part.length()).toLowerCase() + " ";
 		}
 		explRet = explRet.substring(0, explRet.length() - 1);
-		info  += Language.getMessage(e, "utils.contentLevel", explRet) + "\n";
-		Channel afkC = guild.getAfkChannel();
+		info  += LanguageManager.getLanguage(e).getMessage("utils.contentLevel", explRet) + "\n";
+		VoiceChannel afkC = guild.getAfkChannel();
 		if (afkC == null)
-			info  += Language.getMessage(e, "utils.afkNone") + "\n";
+			info  += LanguageManager.getLanguage(e).getMessage("utils.afkNone") + "\n";
 		else {
-			info  += Language.getMessage(e, "utils.afkChannel", Language.escape(afkC.getName())) + "\n";
-			info  += Language.getMessage(e, "utils.afkChannel", guild.getAfkTimeout().getSeconds()) + "\n";
+			info  += LanguageManager.getLanguage(e).getMessage("utils.afkChannel", LanguageManager.escape(afkC.getName())) + "\n";
+			info  += LanguageManager.getLanguage(e).getMessage("utils.afkChannel", guild.getAfkTimeout().getSeconds()) + "\n";
 		}
 		if (e.getAuthor().getIdLong() == Config.getOwner()) {
 			String prefix = Data.getGuildPrefix(guild.getIdLong());
-			info  += Language.getMessage(e, "utils.prefix", prefix) + "\n";
+			info  += LanguageManager.getLanguage(e).getMessage("utils.prefix", prefix) + "\n";
 		}
-		OffsetDateTime create = guild.getCreationTime();
-		info += Language.getMessage(e, "utils.created", create.format(DateTimeFormatter.ofPattern(Language.getDateTimeFormat(guild.getIdLong()))), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault()))) +  "\n";
+		OffsetDateTime create = guild.getTimeCreated();
+		info += LanguageManager.getLanguage(e).getMessage("utils.created", LanguageManager.getLanguage(e).formatDateTime(create.toLocalDateTime()), ChronoUnit.DAYS.between(create, Instant.now().atZone(ZoneId.systemDefault()))) +  "\n";
 		String roles = "";
 		List<Role> roleList = guild.getRoles();
 		for (int i = 0; i < roleList.size(); i++)
 			if (i == 0)
-				roles += Language.escape(roleList.get(i).getName());
+				roles += LanguageManager.escape(roleList.get(i).getName());
 			else if (!roleList.get(i).isPublicRole())
-				roles += ", " + Language.escape(roleList.get(i).getName());
+				roles += ", " + LanguageManager.escape(roleList.get(i).getName());
 		if (!roles.equals(""))
-			info += Language.getMessage(e, "utils.roles", guild.getRoles().size(), roles);
+			info += LanguageManager.getLanguage(e).getMessage("utils.roles", guild.getRoles().size(), roles);
 		else
-			info += Language.getMessage(e, "utils.rolesNone");
+			info += LanguageManager.getLanguage(e).getMessage("utils.rolesNone");
 		build.addField(guild.getName(), info, false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
 
 	public String getDesc(long id) {
-		return Language.getMessage(id, "utils.guildCommandDescription");
+		return LanguageManager.getLanguage(id).getMessage("utils.guildCommandDescription");
 	}
 
 	public boolean isHidden() {

@@ -2,52 +2,47 @@ package com.github.pseudoresonance.resonantbot.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
+import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class RandomCommand implements Command {
 
 	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+		long min = 0, max = 0;
 		if (args.length == 0) {
-			e.getChannel().sendMessage(Language.getMessage(e, "utils.minMaxPlease")).queue();
+			e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.minMaxPlease")).queue();
+			return;
 		} else if (args.length == 1) {
 			try {
-				int min = Integer.valueOf(args[0]);
-				if (min == 2147483647) {
-					e.getChannel().sendMessage(Language.getMessage(e, "utils.integersPlease")).queue();
-				} else {
-					if (min < 0) {
-						e.getChannel().sendMessage(Language.getMessage(e, "utils.randomNumber", ThreadLocalRandom.current().nextInt(min, 1))).queue();
-					} else {
-						e.getChannel().sendMessage(Language.getMessage(e, "utils.randomNumber", ThreadLocalRandom.current().nextInt(0, min + 1))).queue();
-					}
-				}
+				max = Long.valueOf(args[0]);
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage(Language.getMessage(e, "utils.integersPlease")).queue();
+				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.integersPlease")).queue();
+				return;
 			}
 		} else {
 			try {
-				int min = Integer.valueOf(args[0]);
-				int max = Integer.valueOf(args[1]);
-				if (min == 2147483647 || max == 2147483647) {
-					e.getChannel().sendMessage(Language.getMessage(e, "utils.integersPlease")).queue();
-				} else {
-					if (max < min) {
-						e.getChannel().sendMessage(Language.getMessage(e, "utils.randomNumber", ThreadLocalRandom.current().nextInt(max, min + 1))).queue();
-					} else {
-						e.getChannel().sendMessage(Language.getMessage(e, "utils.randomNumber", ThreadLocalRandom.current().nextInt(min, max + 1))).queue();
-					}
-				}
+				min = Long.valueOf(args[0]);
+				max = Long.valueOf(args[1]);
 			} catch (NumberFormatException ex) {
-				e.getChannel().sendMessage(Language.getMessage(e, "utils.integersPlease")).queue();
+				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.integersPlease")).queue();
+				return;
+			}
+		}
+		if (min == Long.MAX_VALUE || max == Long.MAX_VALUE) {
+			e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.integersPlease")).queue();
+		} else {
+			if (max < min) {
+				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.randomNumber", ThreadLocalRandom.current().nextLong(max, min + 1))).queue();
+			} else {
+				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.randomNumber", ThreadLocalRandom.current().nextLong(min, max + 1))).queue();
 			}
 		}
 	}
 
 	public String getDesc(long id) {
-		return Language.getMessage(id, "utils.randomCommandDescription");
+		return LanguageManager.getLanguage(id).getMessage("utils.randomCommandDescription");
 	}
 
 	public boolean isHidden() {

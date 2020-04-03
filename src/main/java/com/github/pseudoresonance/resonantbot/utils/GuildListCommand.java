@@ -3,12 +3,13 @@ package com.github.pseudoresonance.resonantbot.utils;
 import java.awt.Color;
 import java.util.List;
 
-import com.github.pseudoresonance.resonantbot.Language;
 import com.github.pseudoresonance.resonantbot.api.Command;
+import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class GuildListCommand implements Command {
 	
@@ -30,24 +31,31 @@ public class GuildListCommand implements Command {
 			endI = guilds.size();
 		}
 		if (startI >= guilds.size()) {
-			e.getChannel().sendMessage(Language.getMessage(e, "main.noPage", (page + 1))).queue();
+			e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("main.noPage", (page + 1))).queue();
 			return;
 		}
 		for (int i = startI; i < endI; i++) {
 			Guild g = guilds.get(i);
-			guildString += "`" + Language.escape(g.getName()) + "` (" + g.getId() + "): " + g.getOwner().getAsMention() + "\n";
+			String ownerStr = "";
+			try {
+				Member owner = g.retrieveOwner().complete();
+				ownerStr = owner.getAsMention();
+			} catch (Exception ex) {
+				ownerStr = LanguageManager.getLanguage(e).getMessage("utils.unknown");
+			}
+			guildString += "`" + LanguageManager.escape(g.getName()) + "` (" + g.getId() + "): " + ownerStr + "\n";
 		}
 		guildString = guildString.substring(0, guildString.length() - 1);
 		EmbedBuilder build = new EmbedBuilder();
 		build.setColor(new Color(24, 226, 132));
-		build.setTitle(Language.getMessage(e, "utils.botsGuilds", e.getJDA().getSelfUser().getName()));
-		build.addField(Language.getMessage(e, "utils.guildsList", (startI + 1), endI), guildString, true);
-		build.setFooter(Language.getMessage(e, "main.requestedBy", e.getAuthor().getName() + "#" + e.getAuthor().getDiscriminator()), null);
+		build.setTitle(LanguageManager.getLanguage(e).getMessage("utils.botsGuilds", e.getJDA().getSelfUser().getName()));
+		build.addField(LanguageManager.getLanguage(e).getMessage("utils.guildsList", (startI + 1), endI), guildString, true);
+		build.setFooter(LanguageManager.getLanguage(e).getMessage("main.requestedBy", e.getAuthor().getName() + "#" + e.getAuthor().getDiscriminator()), null);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
 
 	public String getDesc(long id) {
-		return Language.getMessage(id, "utils.guildListCommandDescription");
+		return LanguageManager.getLanguage(id).getMessage("utils.guildListCommandDescription");
 	}
 
 	public boolean isHidden() {

@@ -1,4 +1,5 @@
 {
-  "Main": "com.github.pseudoresonance.resonantbot.utils.Utils", 
-  "Name": "Utilities"
+  "Main": "com.github.pseudoresonance.resonantbot.utils.Utils",
+  "Name": "${project.name}",
+  "Version": "${revision}"
 }
