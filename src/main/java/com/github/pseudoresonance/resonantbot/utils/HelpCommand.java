@@ -32,6 +32,8 @@ public class HelpCommand implements Command {
 				build.setTitle(LanguageManager.getLanguage(id).getMessage("utils.helpTitle", Config.getName()));
 				for (String pl : PluginManager.getPluginNames()) {
 					HashMap<String, Command> commands = CommandManager.getPluginCommandMap(PluginManager.getPlugin(pl));
+					if (commands == null)
+						continue;
 					int commandsFound = 0;
 					if (commands.keySet().size() > 0) {
 						String commandSt = "";
