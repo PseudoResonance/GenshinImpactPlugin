@@ -1,21 +1,23 @@
 package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
+import java.util.HashSet;
 import java.util.List;
 
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class GuildListCommand implements Command {
+public class GuildListCommand extends Command {
 	
 	private static final int itemsPerPage = 10;
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		List<Guild> guilds = e.getJDA().getGuilds();
 		int page = 1;
 		if (args.length > 0) {
@@ -52,14 +54,6 @@ public class GuildListCommand implements Command {
 		build.addField(LanguageManager.getLanguage(e).getMessage("utils.guildsList", (startI + 1), endI), guildString, true);
 		build.setFooter(LanguageManager.getLanguage(e).getMessage("main.requestedBy", e.getAuthor().getName() + "#" + e.getAuthor().getDiscriminator()), null);
 		e.getChannel().sendMessage(build.build()).queue();
-	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.guildListCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return true;
 	}
 
 }

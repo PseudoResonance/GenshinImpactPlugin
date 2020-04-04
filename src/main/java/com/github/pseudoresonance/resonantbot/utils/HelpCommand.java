@@ -2,6 +2,7 @@ package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import com.github.pseudoresonance.resonantbot.CommandManager;
 import com.github.pseudoresonance.resonantbot.Config;
@@ -9,15 +10,16 @@ import com.github.pseudoresonance.resonantbot.PluginManager;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 import com.github.pseudoresonance.resonantbot.listeners.MessageListener;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class HelpCommand implements Command {
+public class HelpCommand extends Command {
 
 	@Override
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		try {
 			Long id = 0L;
 			if (e.getChannelType() == ChannelType.PRIVATE)
@@ -38,14 +40,10 @@ public class HelpCommand implements Command {
 					if (commands.keySet().size() > 0) {
 						String commandSt = "";
 						for (String c : commands.keySet()) {
-							if (!commands.get(c).isHidden()) {
-								commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(id) + "\n";
+							Command com = commands.get(c);
+							if (userPermissions.contains(com.getPermissionNode())) {
+								commandSt += "`" + prefix + c + "`  |  " + LanguageManager.getLanguage(id).getMessage(com.getDescriptionKey()) + "\n";
 								commandsFound++;
-							} else {
-								if (e.getAuthor().getIdLong() == Config.getOwner()) {
-									commandSt += "`" + prefix + c + "`  |  " + commands.get(c).getDesc(id) + "\n";
-									commandsFound++;
-								}
 							}
 						}
 						if (commandsFound > 0) {
@@ -62,12 +60,4 @@ public class HelpCommand implements Command {
 		}
 	}
 	
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.helpCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return false;
-	}
-
 }

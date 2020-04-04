@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 
 import com.github.pseudoresonance.resonantbot.CommandManager;
 import com.github.pseudoresonance.resonantbot.Config;
@@ -11,6 +12,7 @@ import com.github.pseudoresonance.resonantbot.PluginManager;
 import com.github.pseudoresonance.resonantbot.ResonantBot;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -19,7 +21,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
-public class StatsCommand implements Command {
+public class StatsCommand extends Command {
 
 	private static SystemInfo info = new SystemInfo();
 
@@ -27,7 +29,7 @@ public class StatsCommand implements Command {
 
 	private static final DecimalFormat df = new DecimalFormat("#.##");
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		Long id = 0L;
 		if (e.getChannelType() == ChannelType.PRIVATE)
 			id = e.getPrivateChannel().getIdLong();
@@ -48,14 +50,6 @@ public class StatsCommand implements Command {
 		build.addField(LanguageManager.getLanguage(id).getMessage("utils.servers"), String.valueOf(e.getJDA().getGuilds().size()), true);
 		build.addField(LanguageManager.getLanguage(id).getMessage("utils.helpfulLinks"), "[" + LanguageManager.getLanguage(id).getMessage("utils.inviteMe") + "](https://discordapp.com/oauth2/authorize?client_id=" + e.getJDA().getSelfUser().getId() + "&scope=bot&permissions=3505222), [GitHub](https://github.com/PseudoResonance/ResonantBot)", false);
 		e.getChannel().sendMessage(build.build()).queue();
-	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.statsCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return false;
 	}
 
 	private String getCpu(long id) {

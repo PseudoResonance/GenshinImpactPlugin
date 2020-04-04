@@ -5,10 +5,12 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -18,9 +20,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 
-public class UserCommand implements Command {
+public class UserCommand extends Command {
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		String[] split = e.getMessage().getContentRaw().split(" ");
 		long id = e.getAuthor().getIdLong();
 		if (split.length > 1) {
@@ -81,14 +83,6 @@ public class UserCommand implements Command {
 			return;
 		}
 		e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.validMentionID")).queue();
-	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.userCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return false;
 	}
 
 }

@@ -1,15 +1,17 @@
 package com.github.pseudoresonance.resonantbot.utils;
 
+import java.util.HashSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class RandomCommand implements Command {
+public class RandomCommand extends Command {
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		long min = 0, max = 0;
 		if (args.length == 0) {
 			e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.minMaxPlease")).queue();
@@ -39,14 +41,6 @@ public class RandomCommand implements Command {
 				e.getChannel().sendMessage(LanguageManager.getLanguage(e).getMessage("utils.randomNumber", ThreadLocalRandom.current().nextLong(min, max + 1))).queue();
 			}
 		}
-	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.randomCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return false;
 	}
 
 }

@@ -7,12 +7,14 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
 import java.util.List;
 
 import com.github.pseudoresonance.resonantbot.Config;
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.data.Data;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -23,9 +25,9 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class GuildCommand implements Command {
+public class GuildCommand extends Command {
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		Guild guild = null;
 		if (e.getChannelType() == ChannelType.PRIVATE) {
 			if (args.length == 0) {
@@ -117,13 +119,5 @@ public class GuildCommand implements Command {
 		build.addField(guild.getName(), info, false);
 		e.getChannel().sendMessage(build.build()).queue();
 	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.guildCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return false;
-	}
-
+	
 }

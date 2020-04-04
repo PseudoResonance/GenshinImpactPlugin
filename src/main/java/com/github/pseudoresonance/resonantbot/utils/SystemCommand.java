@@ -5,9 +5,11 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.github.pseudoresonance.resonantbot.api.Command;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
+import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -23,7 +25,7 @@ import oshi.hardware.Sensors;
 import oshi.software.os.OSFileStore;
 import oshi.software.os.OperatingSystem;
 
-public class SystemCommand implements Command {
+public class SystemCommand extends Command {
 	
 	private static SystemInfo info = new SystemInfo();
 	
@@ -31,7 +33,7 @@ public class SystemCommand implements Command {
 
 	private static final DecimalFormat df = new DecimalFormat("#.##");
 
-	public void onCommand(MessageReceivedEvent e, String command, String[] args) {
+	public void onCommand(MessageReceivedEvent e, String command, HashSet<PermissionGroup> userPermissions, String[] args) {
 		Long id = 0L;
 		if (e.getChannelType() == ChannelType.PRIVATE)
 			id = e.getPrivateChannel().getIdLong();
@@ -162,14 +164,6 @@ public class SystemCommand implements Command {
 			return LanguageManager.getLanguage(id).getMessage("utils.calculating");
 		else
 			return LanguageManager.getLanguage(id).formatTimeAgo(new Timestamp(System.currentTimeMillis() - (int) (time * 1000)), false);
-	}
-
-	public String getDesc(long id) {
-		return LanguageManager.getLanguage(id).getMessage("utils.systemCommandDescription");
-	}
-
-	public boolean isHidden() {
-		return true;
 	}
 
 	private static String bytesToHumanFormat(long bytes, boolean si) {
