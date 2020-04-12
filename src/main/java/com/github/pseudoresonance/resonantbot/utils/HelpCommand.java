@@ -33,7 +33,7 @@ public class HelpCommand extends Command {
 				build.setDescription(LanguageManager.getLanguage(id).getMessage("utils.listCommandsFor", Config.getName()));
 				build.setTitle(LanguageManager.getLanguage(id).getMessage("utils.helpTitle", Config.getName()));
 				for (String pl : PluginManager.getPluginNames()) {
-					HashMap<String, Command> commands = CommandManager.getPluginCommandMap(PluginManager.getPlugin(pl));
+					HashMap<String, Command> commands = CommandManager.getPluginCommandMap(PluginManager.getPlugin(pl), true);
 					if (commands == null)
 						continue;
 					int commandsFound = 0;
@@ -42,7 +42,11 @@ public class HelpCommand extends Command {
 						for (String c : commands.keySet()) {
 							Command com = commands.get(c);
 							if (userPermissions.contains(com.getPermissionNode())) {
-								commandSt += "`" + prefix + c + "`  |  " + LanguageManager.getLanguage(id).getMessage(com.getDescriptionKey()) + "\n";
+								String aliasList = "`" + prefix + c + "`";
+								for (String alias : com.getAliases())
+									if (CommandManager.getCommand(alias).equals(com))
+										aliasList += ", `" + prefix + alias + "`";
+								commandSt += aliasList + "  |  " + LanguageManager.getLanguage(id).getMessage(com.getDescriptionKey()) + "\n";
 								commandsFound++;
 							}
 						}

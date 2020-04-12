@@ -4,7 +4,7 @@ utils:
   guildStatistics: "Guild Statistics"
   guildID: "Guild ID: `{$1$}`"
   ownerID: "Owner: `{$1$} ({$2$})`"
-  members: "Members: `{$1$} ({$2$} Bots | {$3$}%)`"
+  members: "Members: `{$1$}`"
   region: "Region: `{$1$}`"
   verificationLevel: "Verification Level: `{$1$}`"
   contentLevel: "Content Level: `{$1$}`"

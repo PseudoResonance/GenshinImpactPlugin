@@ -4,7 +4,7 @@ utils:
   guildStatistics: "ギルド統計"
   guildID: "ギルドID： `{$1$}`"
   ownerID: "所有者：　`{$1$} （{$2$}）`"
-  members: "メンバー： `{$1$} （{$2$} ボット ｜ {$3$}％）`"
+  members: "メンバー： `{$1$}`"
   region: "リージョン： `{$1$}`"
   verificationLevel: "認証レベル： `{$1$}`"
   contentLevel: "不適切な表現のフィルター： `{$1$}`"

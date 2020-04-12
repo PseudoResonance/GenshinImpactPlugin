@@ -17,7 +17,7 @@ public class Utils extends Plugin {
 		CommandManager.registerCommand(this, new InfoCommand(), "info", "utils.infoCommandDescription");
 		CommandManager.registerCommand(this, new UserCommand(), "user", "utils.userCommandDescription");
 		CommandManager.registerCommand(this, new GuildCommand(), "guild", "utils.guildCommandDescription");
-		CommandManager.registerCommand(this, new GuildListCommand(), "listguilds", "utils.guildListCommandDescription", PermissionGroup.BOT_ADMIN);
+		CommandManager.registerCommand(this, new GuildListCommand(), "listguilds", "utils.guildListCommandDescription", PermissionGroup.BOT_ADMIN, "guildlist");
 	}
 	
 	public void onDisable() {

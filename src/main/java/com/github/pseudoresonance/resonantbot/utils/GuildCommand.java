@@ -1,14 +1,13 @@
 package com.github.pseudoresonance.resonantbot.utils;
 
 import java.awt.Color;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import com.github.pseudoresonance.resonantbot.Config;
 import com.github.pseudoresonance.resonantbot.api.Command;
@@ -19,7 +18,6 @@ import com.github.pseudoresonance.resonantbot.permissions.PermissionGroup;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
@@ -67,14 +65,11 @@ public class GuildCommand extends Command {
 		info  += LanguageManager.getLanguage(e).getMessage("utils.guildStatistics", guild.getId()) + "\n";
 		User owner = guild.getOwner().getUser();
 		info  += LanguageManager.getLanguage(e).getMessage("utils.ownerID", LanguageManager.escape(owner.getName()) + "#" + owner.getDiscriminator(), owner.getId()) + "\n";
-		List<Member> members = guild.getMembers();
-		int bots = 0;
-		int membersSize = members.size();
-		for (Member member : members) {
-			if (member.getUser().isBot())
-				bots++;
+		try {
+			guild.retrieveMembers().get();
+		} catch (InterruptedException | ExecutionException e1) {
 		}
-		info  += LanguageManager.getLanguage(e).getMessage("utils.members", membersSize, bots, new BigDecimal(String.valueOf(bots / Double.valueOf(membersSize) * 100.0)).setScale(2, RoundingMode.HALF_UP)) + "\n";
+		info  += LanguageManager.getLanguage(e).getMessage("utils.members", guild.getMemberCount()) + "\n";
 		info  += LanguageManager.getLanguage(e).getMessage("utils.region", guild.getRegion().getName()) + "\n";
 		String verification = guild.getVerificationLevel().toString();
 		String[] verificationSplit = verification.split("_");
