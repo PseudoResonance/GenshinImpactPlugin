@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.github.pseudoresonance</groupId>
-	<artifactId>UtilsPlugin</artifactId>
+	<artifactId>GenshinImpactPlugin</artifactId>
 	<version>${revision}</version>
-	<name>Utils</name>
+	<name>GenshinImpact</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>1.1.1</revision>
+		<revision>1.0.0</revision>
 	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
@@ -133,32 +133,22 @@
 	</build>
 	<repositories>
 		<repository>
-			<id>jcenter</id>
-			<name>jcenter-bintray</name>
-			<url>http://jcenter.bintray.com</url>
-		</repository>
-		<repository>
 			<id>otake</id>
 			<url>https://nexus.otake.pw/repository/maven-snapshots</url>
 		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
-			<groupId>net.dv8tion</groupId>
-			<artifactId>JDA</artifactId>
-			<version>4.1.1_127</version>
+			<groupId>io.github.pseudoresonance</groupId>
+			<artifactId>ResonantBot</artifactId>
+			<version>1.2.4</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.github.pseudoresonance</groupId>
-			<artifactId>ResonantBot</artifactId>
-			<version>1.2.0</version>
+			<artifactId>APIPlugin</artifactId>
+			<version>1.0</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.oshi</groupId>
-			<artifactId>oshi-core</artifactId>
-			<version>3.9.1</version>
 		</dependency>
 	</dependencies>
 </project>

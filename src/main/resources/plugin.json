@@ -1,5 +1,5 @@
 {
-  "Main": "com.github.pseudoresonance.resonantbot.utils.Utils",
+  "Main": "com.github.pseudoresonance.resonantbot.genshinimpact.GenshinImpact",
   "Name": "${project.name}",
   "Version": "${revision}"
 }
