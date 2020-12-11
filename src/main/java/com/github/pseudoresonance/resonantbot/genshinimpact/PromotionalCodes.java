@@ -44,12 +44,13 @@ public class PromotionalCodes {
 		ses = Executors.newSingleThreadScheduledExecutor();
 		Calendar time = Calendar.getInstance();
 		time.set(Calendar.AM_PM, time.get(Calendar.AM_PM) == Calendar.PM ? Calendar.AM : Calendar.PM);
-		time.set(Calendar.HOUR, 0);
+		time.set(Calendar.HOUR, time.get(Calendar.HOUR) >= 6 ? 0 : 6);
 		time.set(Calendar.MINUTE, 0);
 		time.set(Calendar.SECOND, 0);
 		time.set(Calendar.MILLISECOND, 0);
-		ses.scheduleAtFixedRate(this::checkCodes, time.getTimeInMillis() - System.currentTimeMillis(), 12 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
 		setupStorage(plugin);
+		checkCodes();
+		ses.scheduleAtFixedRate(this::checkCodes, time.getTimeInMillis() - System.currentTimeMillis(), 6 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void stop() {

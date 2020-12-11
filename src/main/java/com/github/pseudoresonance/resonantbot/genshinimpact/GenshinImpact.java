@@ -13,7 +13,8 @@ public class GenshinImpact extends Plugin {
 	}
 	
 	public void onDisable() {
-		pc.stop();
+		if (pc != null)
+			pc.stop();
 	}
 	
 }
