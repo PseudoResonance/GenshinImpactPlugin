@@ -6,6 +6,6 @@ genshinImpact:
   eu: "EU: `{$1$}`"
   na: "NA: `{$1$}`"
   sea: "SEA: `{$1$}`"
-  latestCode: "Latest Promotional Code"
+  latestCode: "Latest Promotional Code #{$1$}"
   noCode: "No Known Promotional Code"
   genshinImpactCommandDescription: "Shows Genshin Impact Promotional Codes"

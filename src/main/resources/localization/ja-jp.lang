@@ -6,6 +6,6 @@ genshinImpact:
   eu: "EU：　`{$1$}`"
   na: "NA：　`{$1$}`"
   sea: "SEA：　`{$1$}`"
-  latestCode: "最新のプロモーションコード"
+  latestCode: "最新のプロモーションコード　＃{$1$}"
   noCode: "プロモーションコードなし"
   genshinImpactCommandDescription: "原神のプロモーションコードを表示"
