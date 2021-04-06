@@ -2,12 +2,14 @@ package com.github.pseudoresonance.resonantbot.genshinimpact;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ import com.github.pseudoresonance.resonantbot.language.Language;
 import com.github.pseudoresonance.resonantbot.language.LanguageManager;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 
 public class PromotionalCodes {
@@ -39,22 +42,24 @@ public class PromotionalCodes {
 	private final List<RegionalCodes> codes = new ArrayList<RegionalCodes>();
 	private final List<RegionalCodes> codesImmutable = Collections.unmodifiableList(codes);
 	private int codeCount = 0;
-	private ZonedDateTime lastCheck = ZonedDateTime.now();
-	
-	private long channelId = 762048993831550987L;
-	private long guildId = 659641518512013313L;
+	private LocalDateTime lastCheck = LocalDateTime.MIN;
+
+	private HashMap<Long, Long> notifyChannels = new HashMap<>();
 
 	public PromotionalCodes(GenshinImpact plugin) {
+		notifyChannels.put(659641518512013313L, 762048993831550987L);
+		notifyChannels.put(421791248249126912L, 828851431993114624L);
+		
 		ses = Executors.newSingleThreadScheduledExecutor();
-		Calendar time = Calendar.getInstance();
-		int hour = (time.get(Calendar.HOUR_OF_DAY) / 2 + 1) * 2;
-		time.set(Calendar.HOUR_OF_DAY, hour >= 24 ? 0 : hour);
-		time.set(Calendar.MINUTE, 0);
-		time.set(Calendar.SECOND, 0);
-		time.set(Calendar.MILLISECOND, 0);
+		LocalDateTime now = LocalDateTime.now();
+		int hour = ((now.getHour() / 2) + 1) * 2;
+		// If within 10 minutes of next 2-hour run interval, skip ahead 2 hours
+		if (now.getMinute() >= 50 && now.getHour() % 2 == 1)
+			hour += 2;
+		LocalDateTime runTime = LocalDate.now().atTime(hour % 24, 0);
 		setupStorage(plugin);
 		checkCodes();
-		ses.scheduleAtFixedRate(this::checkCodes, time.getTimeInMillis() - System.currentTimeMillis(), 2 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
+		ses.scheduleAtFixedRate(this::checkCodes, LocalDateTime.now().until(runTime, ChronoUnit.MILLIS), 2 * 60 * 60 * 1000, TimeUnit.MILLISECONDS);
 	}
 
 	public void stop() {
@@ -102,7 +107,7 @@ public class PromotionalCodes {
 		return codesImmutable;
 	}
 	
-	protected ZonedDateTime getLastCheck() {
+	protected LocalDateTime getLastCheck() {
 		return lastCheck;
 	}
 	
@@ -118,21 +123,28 @@ public class PromotionalCodes {
 	}
 	
 	private void newCodes(List<RegionalCodes> newCodes) {
-		for (RegionalCodes rc : newCodes) {
-			TextChannel ch = ResonantBot.getBot().getJDA().getGuildById(guildId).getTextChannelById(channelId);
-			Language lang = LanguageManager.getLanguage(guildId);
-			EmbedBuilder embed = new EmbedBuilder();
-			embed.setColor(new Color(76, 166, 203));
-			embed.setDescription("https://genshin.mihoyo.com/en/gift\n" + rc.rewards);
-			embed.setTitle(lang.getMessage("genshinImpact.newCode"));
-			String codes = lang.getMessage("genshinImpact.eu", rc.eu);
-			codes += "\n" + lang.getMessage("genshinImpact.na", rc.na);
-			codes += "\n" + lang.getMessage("genshinImpact.sea", rc.sea);
-			embed.addField(lang.getMessage("genshinImpact.codes"), codes, true);
-			embed.setTimestamp(lastCheck);
-			embed.setFooter("https://www.gensh.in/events/promotion-codes");
-			ch.sendMessage(embed.build()).queue();
-			saveCode(rc);
+		for (Entry<Long, Long> pair : notifyChannels.entrySet()) {
+			Guild g = ResonantBot.getBot().getJDA().getGuildById(pair.getKey());
+			Language lang = LanguageManager.getLanguage(pair.getKey());
+			if (g != null) {
+				TextChannel ch = g.getTextChannelById(pair.getValue());
+				if (ch != null) {
+					for (RegionalCodes rc : newCodes) {
+						EmbedBuilder embed = new EmbedBuilder();
+						embed.setColor(new Color(76, 166, 203));
+						embed.setDescription("https://genshin.mihoyo.com/en/gift\n" + rc.rewards);
+						embed.setTitle(lang.getMessage("genshinImpact.newCode"));
+						String codes = lang.getMessage("genshinImpact.eu", rc.eu);
+						codes += "\n" + lang.getMessage("genshinImpact.na", rc.na);
+						codes += "\n" + lang.getMessage("genshinImpact.sea", rc.sea);
+						embed.addField(lang.getMessage("genshinImpact.codes"), codes, true);
+						embed.setTimestamp(lastCheck);
+						embed.setFooter("https://www.gensh.in/events/promotion-codes");
+						ch.sendMessage(embed.build()).queue();
+						saveCode(rc);
+					}
+				}
+			}
 		}
 	}
 
@@ -172,10 +184,18 @@ public class PromotionalCodes {
 				String eu = codesEu.get(i).asText().trim();
 				String na = codesNa.get(i).asText().trim();
 				String sea = codesSea.get(i).asText().trim();
-				RegionalCodes rc = new RegionalCodes(rewards, eu, na, sea);
-				if (!codes.contains(rc)) {
-					codes.add(rc);
-					newCodes.add(rc);
+				if (!(eu.isBlank() && na.isBlank() && sea.isBlank())) {
+					if (eu.isBlank())
+						eu = " ";
+					if (na.isBlank())
+						na = " ";
+					if (sea.isBlank())
+						sea = " ";
+					RegionalCodes rc = new RegionalCodes(rewards, eu, na, sea);
+					if (!codes.contains(rc)) {
+						codes.add(rc);
+						newCodes.add(rc);
+					}
 				}
 			}
 		} catch (FailingHttpStatusCodeException | IOException e) {
@@ -183,7 +203,7 @@ public class PromotionalCodes {
 		} catch (RequestTimeoutException e) {
 			throw e;
 		}
-		lastCheck = ZonedDateTime.now();
+		lastCheck = LocalDateTime.now();
 		if (newCodes.size() > 0)
 			newCodes(newCodes);
 	}

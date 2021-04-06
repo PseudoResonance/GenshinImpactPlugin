@@ -8,7 +8,7 @@
 	<name>GenshinImpact</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<revision>1.0.2</revision>
+		<revision>1.0.3</revision>
 	</properties>
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
